@@ -82,6 +82,7 @@ public class IHLCore extends AbstractProcessor {
         set.add("db.username");
         set.add("db.url");
         set.add("db.schema");
+        set.add("project.root");
         return set;
     }
 
