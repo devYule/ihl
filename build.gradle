@@ -1,0 +1,40 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '8.1.1' // fat jar 필요.
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'me.yule.open'
+            artifactId = 'ihl'
+            version = '0.0.1'
+            from components.java
+        }
+    }
+}
+
+group = 'me.yule.open'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'com.squareup:javapoet:1.13.0'
+    annotationProcessor 'com.squareup:javapoet:1.13.0'
+    annotationProcessor 'com.google.auto.service:auto-service:1.1.1'
+    compileOnly 'com.google.auto.service:auto-service:1.1.1'
+
+}
+shadowJar {
+    archiveClassifier.set('')  // 결과 jar 파일 이름에서 classifier 제거
+}
+
+test {
+    useJUnitPlatform()
+}

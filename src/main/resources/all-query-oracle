@@ -1,0 +1,43 @@
+SELECT
+     cols.OWNER AS TABLE_SCHEMA,
+     cols.TABLE_NAME,
+     cols.COLUMN_NAME,
+     cols.DATA_TYPE,
+     cols.DATA_LENGTH,
+     cols.DATA_PRECISION,
+     cols.DATA_SCALE,
+     cols.NULLABLE,
+     cons.CONSTRAINT_TYPE,
+     cons.CONSTRAINT_NAME,
+     fk.R_OWNER AS REFERENCED_TABLE_SCHEMA,
+     fk_c.TABLE_NAME AS REFERENCED_TABLE_NAME,
+     fk_cc.COLUMN_NAME AS REFERENCED_COLUMN_NAME,
+     cons.SEARCH_CONDITION
+ FROM
+     ALL_TAB_COLUMNS cols
+ LEFT JOIN
+     ALL_CONS_COLUMNS cons_cols
+     ON cols.OWNER = cons_cols.OWNER
+     AND cols.TABLE_NAME = cons_cols.TABLE_NAME
+     AND cols.COLUMN_NAME = cons_cols.COLUMN_NAME
+ LEFT JOIN
+     ALL_CONSTRAINTS cons
+     ON cons_cols.OWNER = cons.OWNER
+     AND cons_cols.TABLE_NAME = cons.TABLE_NAME
+     AND cons_cols.CONSTRAINT_NAME = cons.CONSTRAINT_NAME
+ LEFT JOIN
+     ALL_CONSTRAINTS fk
+     ON cons.CONSTRAINT_TYPE = 'R'
+     AND cons.OWNER = fk.OWNER
+     AND cons.CONSTRAINT_NAME = fk.CONSTRAINT_NAME
+ LEFT JOIN
+     ALL_CONS_COLUMNS fk_cc
+     ON fk.R_OWNER = fk_cc.OWNER
+     AND fk.R_CONSTRAINT_NAME = fk_cc.CONSTRAINT_NAME
+ LEFT JOIN
+     ALL_CONSTRAINTS fk_c
+     ON fk_cc.OWNER = fk_c.OWNER
+     AND fk_cc.CONSTRAINT_NAME = fk_c.CONSTRAINT_NAME
+     AND fk_cc.TABLE_NAME = fk_c.TABLE_NAME
+ WHERE
+     cols.OWNER = ? AND cols.TABLE_NAME in
