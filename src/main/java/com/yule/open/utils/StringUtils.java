@@ -47,7 +47,7 @@ public abstract class StringUtils {
         return camelFromSnake(snake, false);
     }
 
-    public String snakeFromCamel(String camel) {
+    public static String snakeFromCamel(String camel) {
         byte[] bytes = camel.getBytes(StandardCharsets.UTF_8);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < bytes.length; i++) {

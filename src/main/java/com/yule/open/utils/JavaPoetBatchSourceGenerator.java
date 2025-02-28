@@ -130,13 +130,13 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
         TypeSpec.Builder builder = TypeSpec.classBuilder(tbNm)
                 .addModifiers(Modifier.PUBLIC);
         FieldSpecWrapper fieldSpecWrapper = genSource(table.getColumns(), table.getTbNm());
-        builder.addFields(fieldSpecWrapper.fieldSpecs)
-                .addAnnotation(ClassName.get(jpaDependencyPath, "Entity"));
+        builder.addFields(fieldSpecWrapper.fieldSpecs);
 
         if (fieldSpecWrapper.isEmbeddable) {
             builder.addAnnotation(ClassName.get(jpaDependencyPath, "Embeddable"));
             builder.addSuperinterface(ClassName.get("java.io", "Serializable"));
-        }
+        } else builder.addAnnotation(ClassName.get(jpaDependencyPath, "Entity"));
+
 
         if (!(processingEnv.getElementUtils().getTypeElement(lombokDependencyPath) == null)) {
             for (ClassName className : lombokAnnotationForAdd) {
@@ -150,6 +150,13 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
         Map<String, FieldSpec.Builder> resultMap = new LinkedHashMap<>();
         boolean isEmbeddable = false;
         boolean alreadyAddEmbeddedIdField = false;
+        boolean isFK = false;
+        for (Column column : columns) {
+            if (column.getConstraint().getConstraintType() == FOREIGN_KEY) {
+                isFK = true;
+                break;
+            }
+        }
         for (Column column : columns) {
             if (!isEmbeddable && column.getConstraint().getConstraintType() == EMBEDDABLE) {
                 isEmbeddable = true;
@@ -161,7 +168,7 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
                                         embeddedEntityNameGenerator.generateEntityName(tableName.toLowerCase())),
                                 "embeddedId")
                         .addModifiers(Modifier.PRIVATE)
-                        .addAnnotations(genSource(column.getConstraint(), true));
+                        .addAnnotations(genSource(column.getConstraint(), true, isFK));
 
                 resultMap.put(column.getColNm(), embeddedIdBuilder);
                 alreadyAddEmbeddedIdField = true;
@@ -172,7 +179,7 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
             if (resultMap.get(column.getColNm()) != null) {
                 // 어노테이션만 추가.
                 FieldSpec.Builder fieldSpec = resultMap.get(column.getColNm());
-                fieldSpec.addAnnotations(genSource(column.getConstraint(), false));
+                fieldSpec.addAnnotations(genSource(column.getConstraint(), false, isFK));
             } else {
                 FieldSpec.Builder builder = null;
                 String entityName = nameGenerator.generateEntityName(column.getColNm());
@@ -182,7 +189,7 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
                     builder = FieldSpec.builder(typeConverter(column.getConstraint().getRefEntity()), entityName);
                 }
                 builder.addModifiers(Modifier.PRIVATE)
-                        .addAnnotations(genSource(column.getConstraint(), true));
+                        .addAnnotations(genSource(column.getConstraint(), true, isFK));
                 resultMap.put(column.getColNm(), builder);
             }
 
@@ -190,30 +197,38 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
         return new FieldSpecWrapper(resultMap.values().stream().map(FieldSpec.Builder::build).collect(Collectors.toList()), isEmbeddable);
     }
 
-    private List<AnnotationSpec> genSource(Constraint constraint, boolean isFirst) {
+    private List<AnnotationSpec> genSource(Constraint constraint, boolean isFirst, boolean isFK) {
         List<AnnotationSpec> result = new ArrayList<>();
         String nullable = constraint.getNullable(); // N -> not null
         Double dataLenVarchar = constraint.getDataLenVarchar();
         ConstraintsType constraintType = constraint.getConstraintType(); // fk or pk or unique or nothing
-        AnnotationSpec.Builder columnAnno = null;
 
         if (isFirst) {
-            if (isNotNull(dataLenVarchar) || "n".equalsIgnoreCase(nullable) || UNIQUE == constraintType) {
-                columnAnno = AnnotationSpec.builder(ClassName.get(jpaDependencyPath, "Column"));
-            }
+            boolean hasAnyOption = false;
+            AnnotationSpec.Builder columnAnno = isFK ?
+                    AnnotationSpec.builder(ClassName.get(jpaDependencyPath, "JoinColumn")) :
+                    AnnotationSpec.builder(ClassName.get(jpaDependencyPath, "Column"));
+
             if ("n".equalsIgnoreCase(nullable)) {
                 // @Column(nullable = false) (default == true)
                 columnAnno.addMember("nullable", "$L", false);
+                hasAnyOption = true;
             }
-            // if not null, type = varchar or char and need to set it by annotation
-            if (dataLenVarchar != null) {
-                // @Column(length = x) (int only, max 255)
-                columnAnno.addMember("length", "$L", (int) (double) dataLenVarchar);
+            if (!isFK) {
+
+                // if not null, type = varchar or char and need to set it by annotation
+                if (dataLenVarchar != null) {
+                    // @Column(length = x) (int only, max 255)
+                    columnAnno.addMember("length", "$L", (int) (double) dataLenVarchar);
+                    hasAnyOption = true;
+                }
+                if (UNIQUE == constraintType) {
+                    // @Column(unique = true)
+                    columnAnno.addMember("unique", "$L", true);
+                    hasAnyOption = true;
+                }
             }
-            if (UNIQUE == constraintType) {
-                // @Column(unique = true)
-                columnAnno.addMember("unique", "$L", true);
-            }
+            if (hasAnyOption) result.add(columnAnno.build());
         }
         if (constraintType != NONE) {
             if (FOREIGN_KEY == constraintType) {
@@ -240,12 +255,6 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
                 manyToOneAnno.addMember("targetEntity", "$T.class", refClassName);
                 AnnotationSpec anno = manyToOneAnno.build();
                 result.add(anno);
-
-                // @JoinColumn 어노테이션 추가 ( 자신의 원본 컬럼 이름을 사용 -> user 테이블의 order_id 였다면, @JoinColumn(name="order_id") )
-                if (constraint.getRefEntity() != null) {
-                    result.add(AnnotationSpec.builder(ClassName.get(jpaDependencyPath, "JoinColumn"))
-                            .addMember("name", "$S", constraint.getRefEntity()).build());
-                }
             }
             if (PRIMARY_KEY == constraintType) {
                 result.add(AnnotationSpec.builder(ClassName.get(jpaDependencyPath, "Id")).build());
@@ -260,9 +269,7 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
                         .addMember("constraints", "$S", constraint.getCheckString().replaceAll("\"", "")).build());
             }
         }
-        if (columnAnno != null) {
-            result.add(columnAnno.build());
-        }
+
         return result;
     }
 

@@ -167,13 +167,18 @@ public class IHLCore extends AbstractProcessor {
             info("Find " + toEntityTables.size() + " Tables for Entity Mapping...");
             collectionBatchInfo("elements: ", toEntityTables);
 
-            info("Analyse your tables with column and constraints...");
-            Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
-            info("All tables, columns and constraints READY...");
+            if (toEntityTables.isEmpty()) {
+                info("You already have all the entities...");
+            } else {
 
-            info("Generate Source...");
-            BatchSourceGenerator<TypeSpec, Table> generator = new JavaPoetBatchSourceGenerator<>(entityAdapter, path, processingEnv);
-            generator.generate(entityTables);
+                info("Analyse your tables with column and constraints...");
+                Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
+                info("All tables, columns and constraints READY...");
+
+                info("Generate Source...");
+                BatchSourceGenerator<TypeSpec, Table> generator = new JavaPoetBatchSourceGenerator<>(entityAdapter, path, processingEnv);
+                generator.generate(entityTables);
+            }
             info("Done...");
             info("Success to make Entity Sources!!!");
 
