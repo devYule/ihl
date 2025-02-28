@@ -7,7 +7,6 @@ import com.yule.open.info.Constraint;
 import com.yule.open.info.Table;
 import com.yule.open.info.enums.ConstraintsType;
 import com.yule.open.properties.Environment;
-import com.yule.open.properties.EnvironmentProperties;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -21,31 +20,24 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 import static com.yule.open.core.IHLCore.*;
 import static com.yule.open.info.enums.ConstraintsType.*;
 import static com.yule.open.properties.EnvironmentProperties.Required.PROJECT_ROOT;
 import static com.yule.open.utils.JDatabaseConverter.typeConverter;
 import static com.yule.open.utils.Logger.error;
-import static com.yule.open.utils.Validator.isNotNull;
 
 public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> extends BatchSourceGenerator<T, D> {
 
     private final String jpaDependencyPath;
-    private final String lombokDependencyPath;
     private final String entityPath;
-    private final ProcessingEnvironment processingEnv;
-    private final Filer filer;
     private final List<ClassName> lombokAnnotationForAdd;
 
     public JavaPoetBatchSourceGenerator(EntityAdapter entityAdapter, String entityPath, ProcessingEnvironment processingEnv) {
         this.jpaDependencyPath = entityAdapter.getJPADependencyPath();
-        this.lombokDependencyPath = "lombok.getter";
         this.entityPath = entityPath;
-        this.processingEnv = processingEnv;
-        this.filer = processingEnv.getFiler();
 
         /* Lombok */
+        String lombokDependencyPath = "lombok";
         String getter = processingEnv.getOptions().get("need.getter");
         String setter = processingEnv.getOptions().get("need.setter");
         String noArgs = processingEnv.getOptions().get("need.noArgs");
@@ -53,11 +45,11 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
         String blder = processingEnv.getOptions().get("need.builder");
 
         this.lombokAnnotationForAdd = new ArrayList<>();
-        if (getter != null && !getter.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "getter"));
-        if (setter != null && !setter.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "setter"));
-        if (noArgs != null && !noArgs.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "noArgs"));
-        if (allArgs != null && !allArgs.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "allArgs"));
-        if (blder != null && !blder.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "builder"));
+        if (getter != null && !getter.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "Getter"));
+        if (setter != null && !setter.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "Setter"));
+        if (noArgs != null && !noArgs.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "NoArgsConstructor"));
+        if (allArgs != null && !allArgs.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "AllArgsConstructor"));
+        if (blder != null && !blder.isEmpty()) lombokAnnotationForAdd.add(ClassName.get(lombokDependencyPath, "Builder"));
     }
 
     @Override
@@ -138,10 +130,8 @@ public class JavaPoetBatchSourceGenerator<T extends TypeSpec, D extends Table> e
         } else builder.addAnnotation(ClassName.get(jpaDependencyPath, "Entity"));
 
 
-        if (!(processingEnv.getElementUtils().getTypeElement(lombokDependencyPath) == null)) {
-            for (ClassName className : lombokAnnotationForAdd) {
-                builder.addAnnotation(className);
-            }
+        for (ClassName className : lombokAnnotationForAdd) {
+            builder.addAnnotation(className);
         }
         return builder.build();
     }

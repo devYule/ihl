@@ -7,8 +7,8 @@ public interface EnvironmentProperties {
         DB_USERNAME("db.username"),
         DB_PASSWORD("db.password"),
         ENTITY_PATH("entity.path"),
-        ENTITY_NAME_PREFIX("entity.name-prefix"),
-        ENTITY_NAME_SUFFIX("entity.name-suffix"),
+        ENTITY_NAME_PREFIX("entity.name.prefix"),
+        ENTITY_NAME_SUFFIX("entity.name.suffix"),
         ORACLE_SCHEMA("db.schema"),
         MY_SQL_AND_MARIA_DB("db.database-name"),
         PROJECT_ROOT("project.root")

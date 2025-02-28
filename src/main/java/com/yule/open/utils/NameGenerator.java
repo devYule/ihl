@@ -8,8 +8,11 @@ public class NameGenerator {
 
     public NameGenerator(String prefix, String suffix) {
 
-        this.prefix = prefix == null || prefix.isEmpty() ? "" : camelFromSnake(prefix, true);
-        this.suffix = suffix == null || suffix.isEmpty() ? "" : camelFromSnake(suffix, true);
+//        this.prefix = prefix == null || prefix.isEmpty() ? "" : camelFromSnake(prefix, true);
+//        this.suffix = suffix == null || suffix.isEmpty() ? "" : camelFromSnake(suffix, true);
+
+        this.prefix = prefix == null || prefix.isEmpty() ? "" : prefix;
+        this.suffix = suffix == null || suffix.isEmpty() ? "" : suffix;
     }
 
 
@@ -20,7 +23,6 @@ public class NameGenerator {
     public String generateEntityName(String name) {
         return prefix + camelFromSnake(name, true) + suffix;
     }
-
 
 
 }
