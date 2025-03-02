@@ -120,6 +120,11 @@ public class NodeDatabaseAdapter extends DatabaseAdapter {
                     //   변하지 않은 컬럼 커서는 이전 테이블과 연관관계를 가지고 있음.)
                     // 따라서 해당 컬럼은 새로 변경된 테이블과 연관관계를 짓지 않게 됨.
                     columnCursor = getNewColumnCursor(node, colNm, dataType, dataLenNum, graph, tableCursor);
+                    // 아래의 if 절 내에 or (||) 연산자로 추가하면,
+                    // 이미 해당 if 절에서 테이블 명이 정상적으로 변경됐기 때문에,
+                    // 아래 if 절 내의 !node.get(tableCursor).getName().equals(tbNm) 는,
+                    // 언제나 false 가 된다.
+                    // 따라서 테이블 명이 변경 될 경우에 컬럼을 새로 만들지 않게 되는 문제가 발생한다.
                 }
                 if (!node.get(columnCursor).getName().equals(colNm)) {
                     columnCursor = getNewColumnCursor(node, colNm, dataType, dataLenNum, graph, tableCursor);
