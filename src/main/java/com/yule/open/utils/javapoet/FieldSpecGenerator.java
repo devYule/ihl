@@ -72,7 +72,7 @@ public class FieldSpecGenerator {
                 // Add field tpye generated, <Embeddable>
                 // 1회만 수행.
                 if (!defaultType.isAddedEmbeddableAnnotation()) {
-                    System.out.println("!defaultType.isAddedEmbeddableAnnotation()");
+
                     // 추가타입 Embeddable 생성.
                     defaultType.addAdditionalBuilder(embeddable);
                     // Embeddable, Serializable 어노테이션 추가.
@@ -94,12 +94,10 @@ public class FieldSpecGenerator {
 
                     defaultType.getBuilder().addField(embeddedId);
                 }
-                System.out.println("f.getPkCnt() = " + f.getPkCnt());
 
                 b = ts[f.getParent()].getBuilder();
 
                 if (f.getPkCnt() == 1) {
-                    System.out.println("f.isFK() = " + f.isFK());
                     // pk 필드면 (@Id 면)
                     // pk 면 embeddable 에 추가해야함.
                     // 그 외는 그냥 원본 클래스에 추가해야함.

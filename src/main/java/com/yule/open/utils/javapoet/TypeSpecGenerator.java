@@ -44,8 +44,6 @@ public class TypeSpecGenerator {
         Arrays.stream(this.ts).forEach(t -> {
             if (t == null) return;
             List<TypeSpec> additionalBuild = t.getAdditionalBuild(lomboks);
-            System.out.println("table: " + t.getTbNm());
-
             result.addAll(additionalBuild);
             result.add(t.getBuilder()
                     .addAnnotation(ClassName.get(Environment.get(EnvironmentProperties.AnnotationProcessor.JPA_DEPENDENCY), "Entity"))

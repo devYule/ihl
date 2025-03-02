@@ -52,9 +52,7 @@ public class JavapoetNodeBatchSourceGenerator<T extends AnalyseResult, R extends
 
     private void write(TypeSpec spec) {
         String projectRoot = Environment.get(PROJECT_ROOT);
-        System.out.println("projectRoot = " + projectRoot);
         String outputDir = Paths.get(projectRoot, "src/main/java").toString();
-        System.out.println("outputDir = " + outputDir);
         File dir = new File(outputDir);
         Path path = dir.toPath();
         if (Files.notExists(path)) {
@@ -80,14 +78,6 @@ public class JavapoetNodeBatchSourceGenerator<T extends AnalyseResult, R extends
         List<Integer> nums = graph.get(nodeNum);
 
         for (Integer num : nums) {
-            if (nodeNum == 106) {
-                System.out.println("when nodeNum == 106");
-                System.out.println("num = " + num);
-            }
-            if(nodeNum == 103) {
-                System.out.println("when nodeNum == 103");
-                System.out.println("num = " + num);
-            }
             Node n = node.get(num);
 
             if (n instanceof Table) {

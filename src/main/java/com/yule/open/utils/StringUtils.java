@@ -22,7 +22,6 @@ public abstract class StringUtils {
         boolean underFlag = false;
         boolean firstCharUpperFlag = needUpperFirstChar && bytes[0] <= 'z' && bytes[0] >= 'a';
         if (firstCharUpperFlag) sb.append((char) (bytes[0] - caseGap));
-        System.out.println("snake = " + snake);
         for (int i = firstCharUpperFlag ? 1 : 0; i < bytes.length; i++) {
             if (bytes[i] == '_') {
                 underFlag = true;
@@ -37,14 +36,11 @@ public abstract class StringUtils {
 
             if (underFlag) {
                 if (bytes[i] <= 'z' && bytes[i] >= 'a') tk = String.valueOf((char) (bytes[i] - caseGap));
-                System.out.println("token for add = " + tk);
                 underFlag = false;
             }
 
             sb.append(tk);
         }
-        System.out.println("result string: " + sb);
-        System.out.println();
         return sb.toString();
     }
 

@@ -35,12 +35,6 @@ public class AnnotationSpecGenerator {
 
     public void generate(TypeSpecWrapper ts, FieldSpecWrapper fs, Constraint constraint, int myIdx, int parentIdx) {
 
-        System.out.println("------------");
-        System.out.println("ts.getTbNm() = " + ts.getTbNm());
-        System.out.println("fs.getFieldNm() = " + fs.getFieldNm());
-        System.out.println("constraint = " + constraint.getConstraintType().getToken());
-        System.out.println("------------");
-
         if (as[myIdx] == null) {
             as[myIdx] = new AnnotationSpecWrapper(parentIdx);
         }
