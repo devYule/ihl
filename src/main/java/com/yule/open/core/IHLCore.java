@@ -1,59 +1,48 @@
 package com.yule.open.core;
 
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.TypeSpec;
 import com.yule.open.annotations.EnableEntityGenerator;
+import com.yule.open.database.ConnectionFactory;
 import com.yule.open.database.DatabaseAdapter;
-import com.yule.open.database.DefaultDatabaseAdapter;
+
+import com.yule.open.database.data.AnalyseResult;
 import com.yule.open.database.enums.DatabaseKind;
+import com.yule.open.database.graph.NodeDatabaseAdapter;
 import com.yule.open.entity.DefaultEntityAdapter;
 import com.yule.open.entity.EntityAdapter;
-import com.yule.open.info.Table;
 import com.yule.open.mediator.DefaultEntityTableMediator;
 import com.yule.open.mediator.EntityTableMediator;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.EnvironmentProperties;
-import com.yule.open.utils.BatchSourceGenerator;
-import com.yule.open.utils.JavaPoetBatchSourceGenerator;
+
 import com.yule.open.utils.Logger;
 import com.yule.open.utils.NameGenerator;
+import com.yule.open.utils.JavapoetNodeBatchSourceGenerator;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import java.sql.SQLException;
 import java.util.*;
 
+import static com.yule.open.database.ConnectionFactory.getDatabaseKind;
 import static com.yule.open.utils.Validator.*;
 import static com.yule.open.utils.Logger.*;
 import static com.yule.open.properties.ErrorMessageProperties.*;
 import static com.yule.open.properties.ProcessingMessageProperties.*;
-import static com.yule.open.properties.EnvironmentProperties.*;
+import static com.yule.open.properties.EnvironmentProperties.Required;
+import static com.yule.open.properties.EnvironmentProperties.Optional;
+import static com.yule.open.properties.EnvironmentProperties.AnnotationProcessor;
 
-@SupportedOptions({
-        "entity.path",
-        "need.setter",
-        "need.getter",
-        "need.noArgs",
-        "need.allArgs",
-        "need.builder",
-        "db.password",
-        "db.username",
-        "db.url",
-        "db.schema"
-})
 @AutoService(Processor.class)
 @SupportedAnnotationTypes("")
 public class IHLCore extends AbstractProcessor {
 
     public static NameGenerator nameGenerator;
-    public final static String hibernateDependencyPath;
     public final static NameGenerator embeddedEntityNameGenerator;
 
     static {
-        hibernateDependencyPath = "org.hibernate.annotations";
         embeddedEntityNameGenerator = new NameGenerator("Embedded", "Id");
     }
 
@@ -114,6 +103,12 @@ public class IHLCore extends AbstractProcessor {
         String entityNamePrefix = processingEnv.getOptions().get(Required.ENTITY_NAME_PREFIX.getEnv());
         String entityNameSuffix = processingEnv.getOptions().get(Required.ENTITY_NAME_SUFFIX.getEnv());
 
+        String getter = processingEnv.getOptions().get("need.getter");
+        String setter = processingEnv.getOptions().get("need.setter");
+        String noArgs = processingEnv.getOptions().get("need.noArgs");
+        String allArgs = processingEnv.getOptions().get("need.allArgs");
+        String builder = processingEnv.getOptions().get("need.builder");
+
         Environment.put(Required.DB_URL, url);
         Environment.put(Required.DB_USERNAME, name);
         Environment.put(Required.DB_PASSWORD, pw);
@@ -123,21 +118,26 @@ public class IHLCore extends AbstractProcessor {
         Environment.put(Required.ENTITY_NAME_PREFIX, entityNamePrefix);
         Environment.put(Required.ENTITY_NAME_SUFFIX, entityNameSuffix);
 
+        Environment.put(Optional.GETTER, getter);
+        Environment.put(Optional.SETTER, setter);
+        Environment.put(Optional.NOARGS, noArgs);
+        Environment.put(Optional.ALLARGS, allArgs);
+        Environment.put(Optional.BUILDER, builder);
+
+        Environment.put(AnnotationProcessor.JPA_DEPENDENCY, entityAdapter.getJPADependencyPath());
+        Environment.put(AnnotationProcessor.HIBERNATE_DEPENDENCY, "org.hibernate.annotations");
+        Environment.put(AnnotationProcessor.JAVA_IO, "java.io");
+
+
         nameGenerator = new NameGenerator(entityNamePrefix, entityNameSuffix);
         info(VALIDATE_REQUIRED_ENVIRONMENTS.getSuccess());
 
         info("Connect to database...");
-        DatabaseAdapter databaseAdapter = null;
         try {
-            try {
-                databaseAdapter = new DefaultDatabaseAdapter(url, name, pw, processingEnv.getFiler());
-            } catch (SQLException | ClassNotFoundException e) {
-                error(CAN_NOT_FIND_DATABASE_DRIVER.getMessage(), e);
-            }
-            assert (databaseAdapter != null);
+            DatabaseAdapter databaseAdapter = new NodeDatabaseAdapter();
 
             info("Check your database name...");
-            DatabaseKind databaseKind = databaseAdapter.getDatabaseKind();
+            DatabaseKind databaseKind = getDatabaseKind();
             String dbname = null;
             if (databaseKind == DatabaseKind.ORACLE) {
                 info("Your database kind is ORACLE...");
@@ -173,12 +173,12 @@ public class IHLCore extends AbstractProcessor {
             } else {
 
                 info("Analyse your tables with column and constraints...");
-                Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
+//                Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
+                AnalyseResult entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
                 info("All tables, columns and constraints READY...");
 
                 info("Generate Source...");
-                BatchSourceGenerator<TypeSpec, Table> generator = new JavaPoetBatchSourceGenerator<>(entityAdapter, path, processingEnv);
-                generator.generate(entityTables);
+                new JavapoetNodeBatchSourceGenerator<>().generate(entityTables);
             }
             info("Done...");
             info("Success to make Entity Sources!!!");
@@ -186,13 +186,7 @@ public class IHLCore extends AbstractProcessor {
             return true;
 
         } finally {
-            if (databaseAdapter != null) {
-                try {
-                    databaseAdapter.getConn().close();
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            ConnectionFactory.close();
         }
     }
 }

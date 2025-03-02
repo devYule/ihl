@@ -1,6 +1,9 @@
 package com.yule.open.utils;
 
-public interface SourceGenerator<T> {
+import java.util.List;
 
-    int generate(T[] tables);
+public interface SourceGenerator<T, R> {
+
+//    int generate(T[] tables);
+    List<R> generate(T info);
 }

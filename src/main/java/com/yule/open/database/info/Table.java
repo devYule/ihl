@@ -1,15 +1,23 @@
-package com.yule.open.info;
+package com.yule.open.database.info;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Table {
+public class Table implements Node {
 
-    private final String tbNm;
+    private  String tbNm;
     private final List<Column> columns;
 
     {
         this.columns = new ArrayList<>();
+    }
+
+    public Table() {
+
+    }
+
+    public void setTbNm(String tbNm) {
+        this.tbNm = tbNm;
     }
 
     public Table(String tbNm, Column column) {
@@ -37,4 +45,8 @@ public class Table {
     }
 
 
+    @Override
+    public String getName() {
+        return this.getTbNm();
+    }
 }

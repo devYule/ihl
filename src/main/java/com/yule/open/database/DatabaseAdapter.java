@@ -1,38 +1,30 @@
 package com.yule.open.database;
 
-import com.yule.open.database.enums.DatabaseKind;
+import com.yule.open.database.data.AnalyseResult;
 import com.yule.open.database.enums.QueryKind;
-import com.yule.open.info.Table;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
+import static com.yule.open.database.ConnectionFactory.getDatabaseKind;
 import static com.yule.open.utils.Logger.error;
 
 public abstract class DatabaseAdapter {
 
-    protected DatabaseKind databaseKind;
-    protected Connection conn;
+
     protected List<String> allTables;
 
     public abstract List<String> findTables(String dbname);
 
-    public abstract Table[] analyseAllTablesAndBatchSources(String owner, List<String> tableName);
-
-    protected interface ConnectionFactory {
-        Connection getConnection(String url, String username, String password) throws SQLException, ClassNotFoundException;
-    }
-
+    public abstract AnalyseResult analyseAllTablesAndBatchSources(String owner, List<String> tableName);
 
     public String getQueryToken(QueryKind kind) {
         ClassLoader classLoader = this.getClass().getClassLoader();
-        String path = kind.getPrefix() + "query-" + databaseKind.getKind();
+        String path = kind.getPrefix() + "query-" + getDatabaseKind().getKind();
 
         try (BufferedReader br =
                      new BufferedReader(new InputStreamReader(
@@ -52,13 +44,6 @@ public abstract class DatabaseAdapter {
         throw new RuntimeException();
     }
 
-    public DatabaseKind getDatabaseKind() {
-        return databaseKind;
-    }
-
-    public Connection getConn() {
-        return conn;
-    }
 
     public List<String> getAllTables() {
         return allTables;

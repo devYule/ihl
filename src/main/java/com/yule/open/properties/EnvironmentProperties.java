@@ -11,8 +11,7 @@ public interface EnvironmentProperties {
         ENTITY_NAME_SUFFIX("entity.name.suffix"),
         ORACLE_SCHEMA("db.schema"),
         MY_SQL_AND_MARIA_DB("db.database-name"),
-        PROJECT_ROOT("project.root")
-        ;
+        PROJECT_ROOT("project.root");
 
         private final String env;
 
@@ -35,6 +34,20 @@ public interface EnvironmentProperties {
         public final String env;
 
         Optional(String env) {
+            this.env = env;
+        }
+    }
+
+
+    enum AnnotationProcessor implements EnvironmentProperties {
+        JPA_DEPENDENCY("processor.jpaDependency"),
+        HIBERNATE_DEPENDENCY("processor.hibernate"),
+        JAVA_IO("processor.serializable")
+        ;
+
+        private final String env;
+
+        AnnotationProcessor(String env) {
             this.env = env;
         }
     }

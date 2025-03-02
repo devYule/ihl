@@ -45,7 +45,7 @@ public abstract class ConvertType {
     }
 
     public static TypeName check(String refEntity) {
-        return ClassName.get(Environment.get(EnvironmentProperties.Required.ENTITY_PATH), nameGenerator.generateEntityName(refEntity));
+        return ClassName.get(Environment.get(EnvironmentProperties.Required.ENTITY_PATH), refEntity);
     }
 
 

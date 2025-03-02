@@ -1,4 +1,4 @@
-package com.yule.open.info.enums;
+package com.yule.open.database.info.enums;
 
 public enum ConstraintType {
     FK("fk")

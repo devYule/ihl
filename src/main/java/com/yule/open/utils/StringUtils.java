@@ -12,7 +12,7 @@ public abstract class StringUtils {
         int checkRange = Math.min(bytes.length, 3);
         int cnt = 0;
         for (int i = 0; i < checkRange; i++) {
-            if (bytes[i] <= 'Z' && bytes[0] >= 'A') {
+            if (bytes[i] <= 'Z' && bytes[i] >= 'A') {
                 cnt++;
             }
         }
@@ -29,9 +29,14 @@ public abstract class StringUtils {
                 continue;
             }
 
-            String tk = String.valueOf((char) (isAllUpper && bytes[i] <= 'Z' && bytes[0] >= 'A' ? (bytes[i] + caseGap) : bytes[i]));
+            String tk = String.valueOf((char) bytes[i]);
+
+            if (!underFlag && isAllUpper && bytes[i] <= 'Z' && bytes[i] >= 'A') {
+                tk = String.valueOf((char) (bytes[i] + caseGap));
+            }
+
             if (underFlag) {
-                if (bytes[i] <= 'z' && bytes[0] >= 'a') tk = String.valueOf((char) (bytes[i] - caseGap));
+                if (bytes[i] <= 'z' && bytes[i] >= 'a') tk = String.valueOf((char) (bytes[i] - caseGap));
                 System.out.println("token for add = " + tk);
                 underFlag = false;
             }

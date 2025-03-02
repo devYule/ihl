@@ -1,7 +1,5 @@
 package com.yule.open.entity;
 
-import com.yule.open.info.Table;
-
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
@@ -63,6 +61,7 @@ public class DefaultEntityAdapter implements EntityAdapter {
     public List<String> getAlreadyEntityNames() {
         return alreadyEntityNames;
     }
+
     public String getJPADependencyPath() {
         String entityPath = expectEntityPath[validEntityPathIdx];
         return expectEntityPath[validEntityPathIdx].substring(0, entityPath.lastIndexOf("."));

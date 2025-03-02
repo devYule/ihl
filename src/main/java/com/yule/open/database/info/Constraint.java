@@ -1,23 +1,25 @@
-package com.yule.open.info;
+package com.yule.open.database.info;
 
 import com.yule.open.core.IHLCore;
-import com.yule.open.info.enums.ConstraintsType;
+import com.yule.open.database.info.enums.ConstraintsType;
 
 import static com.yule.open.utils.StringUtils.camelFromSnake;
 
-public class Constraint {
+public class Constraint implements Node {
     // constraint
-    private final String nullable;
+    private String nullable;
     private ConstraintsType constraintType; // P: pk, R: fk, U: unique
-    private final Double dataLenVarchar;
+    private Double dataLenVarchar;
     // fk
-    private final String refTb; //  R: fk 일 경우만 존재
-    private final String refCol; //  R: fk 일 경우만 존재
+    private String refTb; //  R: fk 일 경우만 존재
+    private String refCol; //  R: fk 일 경우만 존재
 
-    private final String refEntity;
+    private String refEntity;
 
-    private final String checkString;
+    private String checkString;
 
+    public Constraint() {
+    }
 
     public Constraint(String nullable, ConstraintsType constraintType, String refTb, String refCol, Double dataLenVarchar,
                       String checkString) {
@@ -62,5 +64,24 @@ public class Constraint {
 
     public String getCheckString() {
         return checkString;
+    }
+
+    public Constraint setAll(String nullable, ConstraintsType constraintType, String refTb, String refCol, Double dataLenVarchar,
+                             String checkString) {
+        this.nullable = nullable;
+        this.constraintType = constraintType;
+        this.refTb = refTb != null ? camelFromSnake(refTb.toLowerCase(), true) : null;
+        this.refCol = refCol;
+        this.dataLenVarchar = dataLenVarchar;
+        this.refEntity = refTb != null && refCol != null ?
+                IHLCore.nameGenerator.generateEntityName(refTb) :
+                null;
+        this.checkString = checkString;
+        return this;
+    }
+
+    @Override
+    public String getName() {
+        return this.getConstraintType().getToken();
     }
 }

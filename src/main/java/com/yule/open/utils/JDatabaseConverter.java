@@ -4,11 +4,11 @@ import com.squareup.javapoet.TypeName;
 import com.yule.open.properties.conversion.ConvertType;
 
 public abstract class JDatabaseConverter {
-    public static Class typeConverter(String type, Double numDataLen) {
+    public static Class convert(String type, Double numDataLen) {
         return findClass(type, numDataLen);
     }
 
-    public static TypeName typeConverter(String refEntity) {
+    public static TypeName convert(String refEntity) {
         return findClass(refEntity);
     }
 

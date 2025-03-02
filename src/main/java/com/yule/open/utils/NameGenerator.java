@@ -13,6 +13,7 @@ public class NameGenerator {
 
         this.prefix = prefix == null || prefix.isEmpty() ? "" : prefix;
         this.suffix = suffix == null || suffix.isEmpty() ? "" : suffix;
+
     }
 
 
@@ -21,7 +22,7 @@ public class NameGenerator {
     }
 
     public String generateEntityName(String name) {
-        return prefix + camelFromSnake(name, true) + suffix;
+        return camelFromSnake(generateDatabaseName(name), true);
     }
 
 
