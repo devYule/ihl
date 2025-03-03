@@ -2,7 +2,7 @@ package com.yule.open.database;
 
 import com.yule.open.database.enums.DatabaseKind;
 import com.yule.open.properties.Environment;
-import com.yule.open.properties.EnvironmentProperties;
+import com.yule.open.properties.enums.EnvironmentProperties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

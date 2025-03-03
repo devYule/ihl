@@ -1,5 +1,7 @@
 package com.yule.open.properties;
 
+import com.yule.open.properties.enums.EnvironmentProperties;
+
 import java.util.HashMap;
 import java.util.Map;
 

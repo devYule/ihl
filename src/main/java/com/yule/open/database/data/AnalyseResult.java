@@ -1,7 +1,5 @@
 package com.yule.open.database.data;
 
-import com.yule.open.database.info.Node;
-
 import java.util.List;
 
 public class AnalyseResult {

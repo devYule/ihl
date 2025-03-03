@@ -1,10 +1,5 @@
 package com.yule.open.utils;
 
-import com.yule.open.database.enums.DatabaseKind;
-import com.yule.open.properties.EnvironmentProperties;
-
-import javax.annotation.processing.ProcessingEnvironment;
-
 public class Validator {
 
     public static <T extends Comparable<T>> boolean isUnder(T num, T target) {
