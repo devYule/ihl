@@ -1,8 +1,9 @@
-package com.yule.open.utils.javapoet.spec.wrapper;
+package com.yule.open.utils.javapoet.spec.wrapper.impl;
 
 import com.squareup.javapoet.FieldSpec;
+import com.yule.open.utils.javapoet.spec.wrapper.Spec;
 
-public class FieldSpecWrapper {
+public class FieldSpecWrapper extends Spec {
 
     private final int parent;
     private final FieldSpec.Builder builder;
@@ -35,16 +36,10 @@ public class FieldSpecWrapper {
         return parent;
     }
 
-    public int getPkCnt() {
-        return pkCnt;
-    }
-
     public FieldSpec.Builder getBuilder() {
         return builder;
     }
 
-    public int addPKCnt() {
-        return ++this.pkCnt;
-    }
+
 
 }

@@ -1,27 +1,30 @@
 package com.yule.open.database.data.enums;
 
-import com.yule.open.utils.javapoet.spec.wrapper.AnnotationSpecWrapper;
+import com.yule.open.utils.javapoet.spec.wrapper.impl.AnnotationSpecWrapper;
 
 import java.util.Arrays;
 
 import static com.yule.open.utils.Logger.error;
 
 public enum ConstraintsType {
+    // Analyse database
     PRIMARY_KEY("P", null),
-    FOREIGN_KEY("R", AnnotationSpecWrapper.AnnotationKind.MANY_TO_ONE),
-    UNIQUE("U", AnnotationSpecWrapper.AnnotationKind.COLUMN),
-    CHECK("C", AnnotationSpecWrapper.AnnotationKind.CHECK),
-
+    FOREIGN_KEY("R", AnnotationSpecWrapper.AnnotationKindIndex.MANY_TO_ONE),
+    UNIQUE("U", AnnotationSpecWrapper.AnnotationKindIndex.COLUMN),
+    CHECK("C", AnnotationSpecWrapper.AnnotationKindIndex.CHECK),
+    // internal
+    COLUMN("IC", AnnotationSpecWrapper.AnnotationKindIndex.COLUMN),
+    JOIN_COLUMN("IJC", AnnotationSpecWrapper.AnnotationKindIndex.JOIN_COLUMN),
     ;
     private final String token;
-    private final AnnotationSpecWrapper.AnnotationKind anno;
+    private final AnnotationSpecWrapper.AnnotationKindIndex anno;
 
-    ConstraintsType(String token, AnnotationSpecWrapper.AnnotationKind anno) {
+    ConstraintsType(String token, AnnotationSpecWrapper.AnnotationKindIndex anno) {
         this.token = token;
         this.anno = anno;
     }
 
-    public AnnotationSpecWrapper.AnnotationKind getAnno() {
+    public AnnotationSpecWrapper.AnnotationKindIndex getAnno() {
         return anno;
     }
 

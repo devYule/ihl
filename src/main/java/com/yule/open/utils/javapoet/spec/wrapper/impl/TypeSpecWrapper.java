@@ -1,4 +1,4 @@
-package com.yule.open.utils.javapoet.spec.wrapper;
+package com.yule.open.utils.javapoet.spec.wrapper.impl;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -6,13 +6,14 @@ import com.squareup.javapoet.TypeSpec;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.enums.EnvironmentProperties;
 import com.yule.open.utils.javapoet.spec.JavaPoetSpecGenerateCommander;
+import com.yule.open.utils.javapoet.spec.wrapper.Spec;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.yule.open.core.IHLProcessor.nameGenerator;
 
-public class TypeSpecWrapper {
+public class TypeSpecWrapper extends Spec {
     private final TypeSpec.Builder builder;
     private final TypeSpec.Builder[] additionalBuilder;
     private int pkCnt;
@@ -48,12 +49,10 @@ public class TypeSpecWrapper {
         return builder;
     }
 
-    public int getPkCnt() {
-        return pkCnt;
-    }
     public TypeSpec.Builder getAdditionalBuilder(JavaPoetSpecGenerateCommander.AdditionalTypeKind kind) {
         return additionalBuilder[kind.getIdx()];
     }
+
     public TypeSpec.Builder[] getAdditionalBuilder() {
         return additionalBuilder;
     }
@@ -64,12 +63,11 @@ public class TypeSpecWrapper {
 
     public int addAdditionalBuilder(JavaPoetSpecGenerateCommander.AdditionalTypeKind kind) {
         if (this.additionalBuilder[kind.getIdx()] == null) {
-            if (this.additionalTypeNames[kind.getIdx()] == null)
+            if (this.additionalTypeNames[kind.getIdx()] == null) {
                 this.additionalTypeNames[kind.getIdx()] = kind.getAdditionalTypePrefix() + tbNm + kind.getAdditionalTypeSuffix();
-            this.additionalBuilder[kind.getIdx()] =
-                    TypeSpec.classBuilder(
-                            nameGenerator.generateEntityName(additionalTypeNames[kind.getIdx()])
-                    );
+            }
+
+            this.additionalBuilder[kind.getIdx()] = TypeSpec.classBuilder(nameGenerator.generateEntityName(additionalTypeNames[kind.getIdx()]));
         }
 
         return kind.getIdx();
@@ -90,10 +88,5 @@ public class TypeSpecWrapper {
 
         return result;
     }
-
-    public int addPKCnt() {
-        return ++this.pkCnt;
-    }
-
 
 }

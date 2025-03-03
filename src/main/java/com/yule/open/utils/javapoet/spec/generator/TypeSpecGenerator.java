@@ -8,7 +8,7 @@ import com.yule.open.database.data.Table;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.enums.EnvironmentProperties;
 import com.yule.open.utils.LombokAnnotationGenerator;
-import com.yule.open.utils.javapoet.spec.wrapper.TypeSpecWrapper;
+import com.yule.open.utils.javapoet.spec.wrapper.impl.TypeSpecWrapper;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;

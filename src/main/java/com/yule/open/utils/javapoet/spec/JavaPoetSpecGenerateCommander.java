@@ -4,10 +4,10 @@ import com.squareup.javapoet.TypeSpec;
 import com.yule.open.database.data.Column;
 import com.yule.open.database.data.Constraint;
 import com.yule.open.database.data.Table;
-import com.yule.open.utils.javapoet.spec.generator.AnnotationSpecGenerator;
+import com.yule.open.utils.javapoet.annotations.AnnotationSpecGenerator;
 import com.yule.open.utils.javapoet.spec.generator.FieldSpecGenerator;
 import com.yule.open.utils.javapoet.spec.generator.TypeSpecGenerator;
-import com.yule.open.utils.javapoet.spec.wrapper.FieldSpecWrapper;
+import com.yule.open.utils.javapoet.spec.wrapper.impl.FieldSpecWrapper;
 
 import java.util.*;
 
