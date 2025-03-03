@@ -1,5 +1,6 @@
 package com.yule.open.utils.javapoet.annotations;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.yule.open.database.data.Constraint;
 import com.yule.open.database.data.enums.ConstraintsType;
@@ -19,6 +20,7 @@ import static com.yule.open.utils.javapoet.spec.wrapper.impl.AnnotationSpecWrapp
 
 public class AnnotationSpecGenerator {
     // 자신이 아닌, 부모 (parentId) 의 인덱스에 저장.
+    // 하나의 제약조건으로 병합 (제약조건의 db 조회 결과가 1:N 임.)
     private final AnnotationSpecWrapper[] as;
     private final String DEPENDENCY_JPA;
 
@@ -34,19 +36,19 @@ public class AnnotationSpecGenerator {
         return as;
     }
 
-    public void generate(TypeSpecWrapper ts, FieldSpecWrapper fs, Constraint constraint, int myIdx, int parentIdx) {
-        if (as[myIdx] == null) {
-            as[myIdx] = new AnnotationSpecWrapper(parentIdx);
+    public void generate(TypeSpecWrapper ts, FieldSpecWrapper fs, Constraint constraint, int parentIdx) {
+        if (as[parentIdx] == null) {
+            as[parentIdx] = new AnnotationSpecWrapper(parentIdx, new boolean[AnnotationProperties.Column.values().length]);
         }
-
-        List<AnnotationSpecBuilderWrapper> builder = generateSpec(constraint, as[myIdx]);
+        AnnotationSpecWrapper curObj = as[parentIdx];
+        List<AnnotationSpecBuilderWrapper> builder = generateSpec(constraint, curObj);
 
         for (AnnotationSpecBuilderWrapper b : builder) {
-            addMember(b.getBuilder(), b.getKind(), constraint);
+            addMember(b.getBuilder(), b.getKind(), constraint, curObj.getPropIsVisited());
         }
 
         if (constraint.getConstraintType() == ConstraintsType.PRIMARY_KEY) {
-            as[myIdx].addPKCnt();
+            curObj.addPKCnt();
             fs.addPKCnt();
             ts.addPKCnt();
         }
@@ -60,20 +62,29 @@ public class AnnotationSpecGenerator {
         return spec.addAndGetBuilder(constraint);
     }
 
-    private void addMember(com.squareup.javapoet.AnnotationSpec.Builder builder, AnnotationSpecWrapper.AnnotationKindIndex anno, Constraint constraint) {
+    private void addMember(AnnotationSpec.Builder builder, AnnotationSpecWrapper.AnnotationKindIndex anno, Constraint constraint, boolean[] isVisitedProps) {
         if (anno == COLUMN || anno == JOIN_COLUMN) {
             if ("n".equalsIgnoreCase(constraint.getNullable())) {
                 AnnotationProperties.Column nullableProps = AnnotationProperties.Column.NULLABLE;
-                builder.addMember(nullableProps.getName(), nullableProps.getFormat(), false);
+                if (!isVisitedProps[nullableProps.ordinal()]) {
+                    builder.addMember(nullableProps.getName(), nullableProps.getFormat(), false);
+                    isVisitedProps[nullableProps.ordinal()] = true;
+                }
             }
             // @JoinColumn 에는 length 가 없음 (ManyToOne 이 동반되므로, length 는 참조받는 클래스에 존재함.
             if (anno == COLUMN && constraint.getDataLenVarchar() != null) {
                 AnnotationProperties.Column lengthProps = AnnotationProperties.Column.LENGTH;
-                builder.addMember(lengthProps.getName(), lengthProps.getFormat(), (int) (double) constraint.getDataLenVarchar());
+                if (!isVisitedProps[lengthProps.ordinal()]) {
+                    builder.addMember(lengthProps.getName(), lengthProps.getFormat(), (int) (double) constraint.getDataLenVarchar());
+                    isVisitedProps[lengthProps.ordinal()] = true;
+                }
             }
             if (constraint.getConstraintType() == ConstraintsType.UNIQUE) {
                 AnnotationProperties.Column uniqueProps = AnnotationProperties.Column.UNIQUE;
-                builder.addMember(uniqueProps.getName(), uniqueProps.getFormat(), true);
+                if (!isVisitedProps[uniqueProps.ordinal()]) {
+                    builder.addMember(uniqueProps.getName(), uniqueProps.getFormat(), true);
+                    isVisitedProps[uniqueProps.ordinal()] = true;
+                }
             }
         }
         if (anno == MANY_TO_ONE) {

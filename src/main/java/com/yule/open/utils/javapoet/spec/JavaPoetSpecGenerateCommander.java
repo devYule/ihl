@@ -43,14 +43,13 @@ public class JavaPoetSpecGenerateCommander {
 
     // Overload
     // Command
-    public void generate(Constraint constraint, int myIdx, int parentIdx) {
+    public void generate(Constraint constraint, int parentIdx) {
 
         FieldSpecWrapper fs = fieldSpecGenerator.getFs()[parentIdx];
         annotationSpecGenerator.generate(
                 typeSpecGenerator.getTs()[fs.getParent()],
                 fs,
                 constraint,
-                myIdx,
                 parentIdx
         );
 

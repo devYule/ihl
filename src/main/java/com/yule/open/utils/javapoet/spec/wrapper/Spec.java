@@ -12,6 +12,10 @@ public abstract class Spec {
         return ++this.pkCnt;
     }
 
+    public final int addPKCnt(int cnt) {
+        return this.pkCnt = cnt;
+    }
+
     public final int getPkCnt() {
         return pkCnt;
     }

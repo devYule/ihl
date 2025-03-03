@@ -62,27 +62,6 @@ public interface AnnotationProperties {
         }
     }
 
-    enum JoinColumn {
-        NULLABLE("nullable", "$L"),
-        LENGTH("length", "$L"),
-        UNIQUE("unique", "$L");
-        private final String name;
-        private final String format;
-
-        JoinColumn(String name, String format) {
-            this.name = name;
-            this.format = format;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getFormat() {
-            return format;
-        }
-    }
-
     enum GeneratedValue {
         STRATEGY("strategy", "$T." + StrategyFormat.AUTO);
 

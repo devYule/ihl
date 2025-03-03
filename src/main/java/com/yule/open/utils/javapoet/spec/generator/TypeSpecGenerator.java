@@ -44,6 +44,7 @@ public class TypeSpecGenerator {
         List<TypeSpec> result = new ArrayList<>();
         Arrays.stream(this.ts).forEach(t -> {
             if (t == null) return;
+            System.out.println("t.getPkCnt() = " + t.getPkCnt());
             List<TypeSpec> additionalBuild = t.getAdditionalBuild(lomboks);
             result.addAll(additionalBuild);
             result.add(t.getBuilder()

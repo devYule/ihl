@@ -88,7 +88,7 @@ public class JavapoetNodeBatchSourceGenerator<T extends AnalyseResult, R extends
                 specGenerator.generate((Column) n, num, nodeNum);
             }
             if (n instanceof Constraint) {
-                specGenerator.generate((Constraint) n, num, nodeNum);
+                specGenerator.generate((Constraint) n, nodeNum);
             }
             dfs(num);
 

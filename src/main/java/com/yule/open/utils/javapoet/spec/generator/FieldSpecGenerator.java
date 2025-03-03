@@ -29,10 +29,11 @@ public class FieldSpecGenerator {
 
     public void generate(TypeSpecWrapper ts, Column column, int myIdx, int parentIdx) {
         if (fs[myIdx] == null) {
-            fs[myIdx] = new FieldSpecWrapper(parentIdx, generateSpec(column, column.getRefEntity()), camelFromSnake(column.getColNm()));
+            fs[myIdx] = new FieldSpecWrapper(parentIdx, generateSpec(column, column.getRefEntity()),
+                    camelFromSnake(column.getColNm()));
         }
-        if (fs[myIdx].getPkCnt() == 1) ts.addPKCnt();
 
+//        if (fs[myIdx].getPkCnt() > 0) ts.addPKCnt(fs[parentIdx].getPkCnt());
 
     }
 
@@ -63,9 +64,9 @@ public class FieldSpecGenerator {
     public void build(TypeSpecWrapper[] ts) {
         Arrays.stream(this.fs).forEach(f -> {
             if (f == null) return;
+            System.out.println("f.getPkCnt() = " + f.getPkCnt());
             TypeSpecWrapper parentTypeSpec = ts[f.getParent()];
             TypeSpec.Builder b = parentTypeSpec.getBuilder();
-
             // 복합키일 경우,
             if (parentTypeSpec.getPkCnt() > 1) {
                 JavaPoetSpecGenerateCommander.AdditionalTypeKind embeddable = JavaPoetSpecGenerateCommander.AdditionalTypeKind.EMBEDDABLE;

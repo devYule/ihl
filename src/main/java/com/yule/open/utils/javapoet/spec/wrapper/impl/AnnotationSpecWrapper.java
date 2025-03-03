@@ -20,14 +20,16 @@ public class AnnotationSpecWrapper extends Spec {
     private final AnnotationSpec.Builder[] builder;
     private final String DEPENDENCY_JPA;
     private final String DEPENDENCY_HIBERNATE;
+    private final boolean[] propIsVisited;
 
 
-    public AnnotationSpecWrapper(int parent) {
+    public AnnotationSpecWrapper(int parent, boolean[] propIsVisited) {
         int annoCnt = AnnotationKindIndex.values().length;
         this.parent = parent;
         this.builder = new AnnotationSpec.Builder[annoCnt];
         this.DEPENDENCY_JPA = Environment.get(JPA_DEPENDENCY);
         this.DEPENDENCY_HIBERNATE = Environment.get(HIBERNATE_DEPENDENCY);
+        this.propIsVisited = propIsVisited;
     }
 
     public AnnotationSpecWrapper decideColumnAnnotation() {
@@ -69,9 +71,7 @@ public class AnnotationSpecWrapper extends Spec {
         }
 
         return result;
-
     }
-
 
     public int getParent() {
         return parent;
@@ -106,5 +106,8 @@ public class AnnotationSpecWrapper extends Spec {
         public int getIdx() {
             return idx;
         }
+    }
+    public boolean[] getPropIsVisited() {
+        return propIsVisited;
     }
 }
