@@ -1,4 +1,4 @@
-package com.yule.open.utils.javapoet.annotations.properties;
+package com.yule.open.javapoet.properties;
 
 public interface AnnotationProperties {
     enum ManyToOne {
@@ -100,6 +100,27 @@ public interface AnnotationProperties {
         private final String format;
 
         MapsId(String name, String format) {
+            this.name = name;
+            this.format = format;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+    }
+
+    enum Table {
+        NAME("name", "$S"),
+        SCHEMA("schema", "$S")
+        ;
+        private final String name;
+        private final String format;
+
+        Table(String name, String format) {
             this.name = name;
             this.format = format;
         }

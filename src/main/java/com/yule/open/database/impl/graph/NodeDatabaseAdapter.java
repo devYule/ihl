@@ -133,7 +133,7 @@ public class NodeDatabaseAdapter extends DatabaseAdapter {
 
                     if ("R".equalsIgnoreCase(constraintType)) {
                         ((Column) node.get(columnCursor)).setFK(true);
-                        if (refTb != null && refCol != null) ((Column) node.get(columnCursor)).setRefEntity(refTb);
+                        if (refTb != null && refCol != null) ((Column) node.get(columnCursor)).setRefTb(refTb);
                     }
                 }
 

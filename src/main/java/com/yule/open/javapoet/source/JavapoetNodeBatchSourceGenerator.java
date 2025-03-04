@@ -1,4 +1,4 @@
-package com.yule.open.utils.javapoet.spec.generator;
+package com.yule.open.javapoet.source;
 
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
@@ -9,7 +9,7 @@ import com.yule.open.database.data.Node;
 import com.yule.open.database.data.Table;
 import com.yule.open.properties.Environment;
 import com.yule.open.utils.SourceGenerator;
-import com.yule.open.utils.javapoet.spec.JavaPoetSpecGenerateCommander;
+import com.yule.open.javapoet.spec.JavaPoetSpecGenerateCommander;
 
 import java.io.File;
 import java.io.IOException;

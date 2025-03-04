@@ -1,4 +1,4 @@
-package com.yule.open.utils.javapoet.annotations;
+package com.yule.open.javapoet.spec.generator;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -6,41 +6,41 @@ import com.yule.open.database.data.Constraint;
 import com.yule.open.database.data.enums.ConstraintsType;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.enums.EnvironmentProperties;
-import com.yule.open.utils.javapoet.annotations.properties.AnnotationProperties;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.AnnotationSpecWrapper;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.FieldSpecWrapper;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.TypeSpecWrapper;
-import com.yule.open.utils.javapoet.spec.wrapper.wrapper.AnnotationSpecBuilderWrapper;
+import com.yule.open.javapoet.properties.AnnotationProperties;
+import com.yule.open.javapoet.spec.wrapper.impl.ConstraintsAnnotationSpecWrapper;
+import com.yule.open.javapoet.spec.wrapper.impl.FieldSpecWrapper;
+import com.yule.open.javapoet.spec.wrapper.impl.TypeSpecWrapper;
+import com.yule.open.javapoet.spec.wrapper.wrapper.AnnotationSpecBuilderWrapper;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static com.yule.open.properties.enums.EnvironmentProperties.AnnotationProcessor.JPA_DEPENDENCY;
-import static com.yule.open.utils.javapoet.spec.wrapper.impl.AnnotationSpecWrapper.AnnotationKindIndex.*;
+import static com.yule.open.javapoet.spec.wrapper.impl.ConstraintsAnnotationSpecWrapper.AnnotationKindIndex.*;
 
-public class AnnotationSpecGenerator {
+public class ConstraintsAnnotationSpecGenerator {
     // 자신이 아닌, 부모 (parentId) 의 인덱스에 저장.
     // 하나의 제약조건으로 병합 (제약조건의 db 조회 결과가 1:N 임.)
-    private final AnnotationSpecWrapper[] as;
+    private final ConstraintsAnnotationSpecWrapper[] as;
     private final String DEPENDENCY_JPA;
 
 
-    public AnnotationSpecGenerator(int wholeNodeSize) {
+    public ConstraintsAnnotationSpecGenerator(int wholeNodeSize) {
 
-        this.as = new AnnotationSpecWrapper[wholeNodeSize];
+        this.as = new ConstraintsAnnotationSpecWrapper[wholeNodeSize];
         this.DEPENDENCY_JPA = Environment.get(JPA_DEPENDENCY);
 
     }
 
-    public AnnotationSpecWrapper[] getAs() {
+    public ConstraintsAnnotationSpecWrapper[] getAs() {
         return as;
     }
 
     public void generate(TypeSpecWrapper ts, FieldSpecWrapper fs, Constraint constraint, int parentIdx) {
         if (as[parentIdx] == null) {
-            as[parentIdx] = new AnnotationSpecWrapper(parentIdx, new boolean[AnnotationProperties.Column.values().length]);
+            as[parentIdx] = new ConstraintsAnnotationSpecWrapper(parentIdx, new boolean[AnnotationProperties.Column.values().length]);
         }
-        AnnotationSpecWrapper curObj = as[parentIdx];
+        ConstraintsAnnotationSpecWrapper curObj = as[parentIdx];
         List<AnnotationSpecBuilderWrapper> builder = generateSpec(constraint, curObj);
 
         for (AnnotationSpecBuilderWrapper b : builder) {
@@ -58,11 +58,11 @@ public class AnnotationSpecGenerator {
 
     }
 
-    private List<AnnotationSpecBuilderWrapper> generateSpec(Constraint constraint, AnnotationSpecWrapper spec) {
+    private List<AnnotationSpecBuilderWrapper> generateSpec(Constraint constraint, ConstraintsAnnotationSpecWrapper spec) {
         return spec.addAndGetBuilder(constraint);
     }
 
-    private void addMember(AnnotationSpec.Builder builder, AnnotationSpecWrapper.AnnotationKindIndex anno, Constraint constraint, boolean[] isVisitedProps) {
+    private void addMember(AnnotationSpec.Builder builder, ConstraintsAnnotationSpecWrapper.AnnotationKindIndex anno, Constraint constraint, boolean[] isVisitedProps) {
         if (anno == COLUMN || anno == JOIN_COLUMN) {
             if ("n".equalsIgnoreCase(constraint.getNullable())) {
                 AnnotationProperties.Column nullableProps = AnnotationProperties.Column.NULLABLE;

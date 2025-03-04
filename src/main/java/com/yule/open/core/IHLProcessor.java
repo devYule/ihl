@@ -17,7 +17,7 @@ import com.yule.open.properties.enums.EnvironmentProperties;
 
 import com.yule.open.utils.Logger;
 import com.yule.open.utils.NameGenerator;
-import com.yule.open.utils.javapoet.spec.generator.JavapoetNodeBatchSourceGenerator;
+import com.yule.open.javapoet.source.JavapoetNodeBatchSourceGenerator;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -115,6 +115,11 @@ public class IHLProcessor extends AbstractProcessor {
         Environment.put(Required.ENTITY_PATH, path);
         Environment.put(Required.PROJECT_ROOT, projectRoot);
 
+        // lazy
+        Environment.put(Required.ORACLE_SCHEMA, null);
+        // lazy
+        Environment.put(Required.MY_SQL_AND_MARIA_DB, null);
+
         Environment.put(Required.ENTITY_NAME_PREFIX, entityNamePrefix);
         Environment.put(Required.ENTITY_NAME_SUFFIX, entityNameSuffix);
 
@@ -141,10 +146,10 @@ public class IHLProcessor extends AbstractProcessor {
             String dbname = null;
             if (databaseKind == DatabaseKind.ORACLE) {
                 info("Your database kind is ORACLE...");
-                dbname = processingEnv.getOptions().get(EnvironmentProperties.Required.ORACLE_SCHEMA.getEnv());
+                Environment.put(Required.ORACLE_SCHEMA, dbname = processingEnv.getOptions().get(EnvironmentProperties.Required.ORACLE_SCHEMA.getEnv()));
             } else if (databaseKind == DatabaseKind.MYSQL || databaseKind == DatabaseKind.MARIADB) {
                 info("Your database kind is MYSQL(MARIADB)...");
-                dbname = processingEnv.getOptions().get(EnvironmentProperties.Required.MY_SQL_AND_MARIA_DB.getEnv());
+                Environment.put(Required.MY_SQL_AND_MARIA_DB, dbname = processingEnv.getOptions().get(EnvironmentProperties.Required.MY_SQL_AND_MARIA_DB.getEnv()));
             }
             if (isNull(dbname)) error(SCHEMA_OR_DATABASE_NAME_IS_NOT_PROVIDED.getMessage());
             info("Database is found...");

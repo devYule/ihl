@@ -1,4 +1,4 @@
-package com.yule.open.utils.javapoet.annotations.properties;
+package com.yule.open.javapoet.properties;
 
 public enum AnnotationName {
     ManyToOne,

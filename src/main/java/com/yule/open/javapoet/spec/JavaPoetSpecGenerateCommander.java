@@ -1,13 +1,13 @@
-package com.yule.open.utils.javapoet.spec;
+package com.yule.open.javapoet.spec;
 
 import com.squareup.javapoet.TypeSpec;
 import com.yule.open.database.data.Column;
 import com.yule.open.database.data.Constraint;
 import com.yule.open.database.data.Table;
-import com.yule.open.utils.javapoet.annotations.AnnotationSpecGenerator;
-import com.yule.open.utils.javapoet.spec.generator.FieldSpecGenerator;
-import com.yule.open.utils.javapoet.spec.generator.TypeSpecGenerator;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.FieldSpecWrapper;
+import com.yule.open.javapoet.spec.generator.ConstraintsAnnotationSpecGenerator;
+import com.yule.open.javapoet.spec.generator.FieldSpecGenerator;
+import com.yule.open.javapoet.spec.generator.TypeSpecGenerator;
+import com.yule.open.javapoet.spec.wrapper.impl.FieldSpecWrapper;
 
 import java.util.*;
 
@@ -15,7 +15,7 @@ public class JavaPoetSpecGenerateCommander {
 
     private final TypeSpecGenerator typeSpecGenerator;
     private final FieldSpecGenerator fieldSpecGenerator;
-    private final AnnotationSpecGenerator annotationSpecGenerator;
+    private final ConstraintsAnnotationSpecGenerator constraintsAnnotationSpecGenerator;
 
     public JavaPoetSpecGenerateCommander(int wholeNodeSize) {
 
@@ -26,7 +26,7 @@ public class JavaPoetSpecGenerateCommander {
         // Generate generators
         this.typeSpecGenerator = new TypeSpecGenerator(wholeNodeSize);
         this.fieldSpecGenerator = new FieldSpecGenerator(wholeNodeSize);
-        this.annotationSpecGenerator = new AnnotationSpecGenerator(wholeNodeSize);
+        this.constraintsAnnotationSpecGenerator = new ConstraintsAnnotationSpecGenerator(wholeNodeSize);
     }
 
     // Overload
@@ -38,7 +38,7 @@ public class JavaPoetSpecGenerateCommander {
     // Overload
     // Command
     public void generate(Column column, int myIdx, int parentIdx) {
-        fieldSpecGenerator.generate(typeSpecGenerator.getTs()[parentIdx], column, myIdx, parentIdx);
+        fieldSpecGenerator.generate(column, myIdx, parentIdx);
     }
 
     // Overload
@@ -46,7 +46,7 @@ public class JavaPoetSpecGenerateCommander {
     public void generate(Constraint constraint, int parentIdx) {
 
         FieldSpecWrapper fs = fieldSpecGenerator.getFs()[parentIdx];
-        annotationSpecGenerator.generate(
+        constraintsAnnotationSpecGenerator.generate(
                 typeSpecGenerator.getTs()[fs.getParent()],
                 fs,
                 constraint,
@@ -60,7 +60,7 @@ public class JavaPoetSpecGenerateCommander {
      * Mediator.
      */
     public List<TypeSpec> build() {
-        annotationSpecGenerator.build(fieldSpecGenerator.getFs());
+        constraintsAnnotationSpecGenerator.build(fieldSpecGenerator.getFs());
         fieldSpecGenerator.build(typeSpecGenerator.getTs());
         return typeSpecGenerator.build();
     }

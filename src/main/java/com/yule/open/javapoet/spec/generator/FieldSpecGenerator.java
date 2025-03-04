@@ -1,19 +1,16 @@
-package com.yule.open.utils.javapoet.spec.generator;
+package com.yule.open.javapoet.spec.generator;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.*;
 import com.yule.open.core.IHLProcessor;
 import com.yule.open.database.data.Column;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.conversion.TypeConverter;
 import com.yule.open.properties.enums.EnvironmentProperties;
-import com.yule.open.utils.javapoet.annotations.properties.AnnotationProperties;
-import com.yule.open.utils.javapoet.annotations.properties.AnnotationName;
-import com.yule.open.utils.javapoet.spec.JavaPoetSpecGenerateCommander;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.FieldSpecWrapper;
-import com.yule.open.utils.javapoet.spec.wrapper.impl.TypeSpecWrapper;
+import com.yule.open.javapoet.properties.AnnotationProperties;
+import com.yule.open.javapoet.properties.AnnotationName;
+import com.yule.open.javapoet.spec.JavaPoetSpecGenerateCommander;
+import com.yule.open.javapoet.spec.wrapper.impl.FieldSpecWrapper;
+import com.yule.open.javapoet.spec.wrapper.impl.TypeSpecWrapper;
 
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
@@ -27,31 +24,38 @@ public class FieldSpecGenerator {
         this.fs = new FieldSpecWrapper[wholeNodeSize];
     }
 
-    public void generate(TypeSpecWrapper ts, Column column, int myIdx, int parentIdx) {
+    public void generate(Column column, int myIdx, int parentIdx) {
         if (fs[myIdx] == null) {
-            fs[myIdx] = new FieldSpecWrapper(parentIdx, generateSpec(column, column.getRefEntity()),
-                    camelFromSnake(column.getColNm()));
+            TypeName convertType = null;
+            if (column.getRefEntity() != null) convertType = TypeConverter.convert(column.getRefEntity());
+            String fieldName = column.isFK() && column.getRefTb() != null ? camelFromSnake(column.getRefTb()) : camelFromSnake(column.getColNm());
+            fs[myIdx] = new FieldSpecWrapper(
+                    parentIdx,
+                    generateSpec(
+                            column.isFK(), fieldName, column.getDataType(), column.getDataLenNum(),
+                            convertType
+                    ),
+                    fieldName,
+                    column.getRefTb()
+            );
         }
-
-//        if (fs[myIdx].getPkCnt() > 0) ts.addPKCnt(fs[parentIdx].getPkCnt());
 
     }
 
 
-    private FieldSpec.Builder generateSpec(Column column, String refEntity) {
+    private FieldSpec.Builder generateSpec(boolean isFK, String fieldName, String dataType, Double dataLength,
+                                           TypeName convertedRefEntityTypeName) {
         /* generate process */
-        String fieldName = camelFromSnake(column.getColNm(), false);
-
-        if (column.isFK()) {
+        if (isFK) {
             return FieldSpec.builder(
-                    TypeConverter.convert(refEntity),
+                    convertedRefEntityTypeName,
                     fieldName,
                     Modifier.PRIVATE
             );
         }
 
         return FieldSpec.builder(
-                TypeConverter.convert(column.getDataType(), column.getDataLenNum()),
+                TypeConverter.convert(dataType, dataLength),
                 fieldName,
                 Modifier.PRIVATE
         );
@@ -64,9 +68,9 @@ public class FieldSpecGenerator {
     public void build(TypeSpecWrapper[] ts) {
         Arrays.stream(this.fs).forEach(f -> {
             if (f == null) return;
-            System.out.println("f.getPkCnt() = " + f.getPkCnt());
             TypeSpecWrapper parentTypeSpec = ts[f.getParent()];
             TypeSpec.Builder b = parentTypeSpec.getBuilder();
+
             // 복합키일 경우,
             if (parentTypeSpec.getPkCnt() > 1) {
                 JavaPoetSpecGenerateCommander.AdditionalTypeKind embeddable = JavaPoetSpecGenerateCommander.AdditionalTypeKind.EMBEDDABLE;
@@ -113,6 +117,7 @@ public class FieldSpecGenerator {
                         // 복합키 + 외래키는 Embeddable 클래스에도 Primitive 타입으로 id 프로퍼티를 추가해 주고,
                         // MapsId 에는 해당 프로퍼티의 값을 기재해 주어야 함.
 
+                        // Embeddable 만들기
                         TypeSpec.Builder embeddableTypeBuilder = parentTypeSpec.getAdditionalBuilder(embeddable);
                         embeddableTypeBuilder.addField(Long.class, f.getFieldNm(), Modifier.PRIVATE);
 

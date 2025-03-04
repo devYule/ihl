@@ -1,22 +1,21 @@
-package com.yule.open.utils.javapoet.spec.wrapper.impl;
+package com.yule.open.javapoet.spec.wrapper.impl;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
 import com.yule.open.properties.Environment;
 import com.yule.open.properties.enums.EnvironmentProperties;
-import com.yule.open.utils.javapoet.spec.JavaPoetSpecGenerateCommander;
-import com.yule.open.utils.javapoet.spec.wrapper.Spec;
+import com.yule.open.javapoet.spec.JavaPoetSpecGenerateCommander;
+import com.yule.open.javapoet.spec.wrapper.SpecWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.yule.open.core.IHLProcessor.nameGenerator;
 
-public class TypeSpecWrapper extends Spec {
+public class TypeSpecWrapper extends SpecWrapper {
     private final TypeSpec.Builder builder;
     private final TypeSpec.Builder[] additionalBuilder;
-    private int pkCnt;
     private final String tbNm;
     private boolean isAddedEmbeddableAnnotation;
     private final String[] additionalTypeNames;
@@ -26,7 +25,6 @@ public class TypeSpecWrapper extends Spec {
         this.builder = builder;
         this.additionalBuilder = new TypeSpec.Builder[JavaPoetSpecGenerateCommander.AdditionalTypeKind.values().length];
         this.additionalTypeNames = new String[JavaPoetSpecGenerateCommander.AdditionalTypeKind.values().length];
-        this.pkCnt = 0;
         this.isAddedEmbeddableAnnotation = false;
         this.tbNm = tbNm;
     }

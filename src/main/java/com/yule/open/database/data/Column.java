@@ -14,6 +14,7 @@ public class Column implements Node {
 
     private boolean isFK;
     private String refEntity;
+    private String refTb;
 
 
     private Constraint constraint;
@@ -24,15 +25,15 @@ public class Column implements Node {
         isFK = false;
     }
 
-    public String getRefEntity() {
-        return refEntity;
-    }
-
-    public void setRefEntity(String refTb) {
-        this.refEntity = IHLProcessor.nameGenerator.generateEntityName(refTb);
-    }
 
     public Column() {
+    }
+
+    public Column(String colNm, String dataType, Double dataLenNum, Constraint constraint) {
+        this.colNm = camelFromSnake(colNm.toLowerCase());
+        this.dataType = dataType;
+        this.dataLenNum = dataLenNum;
+        this.constraint = constraint;
     }
 
     public Column(String colNm, String dataType, Double dataLenNum) {
@@ -40,6 +41,12 @@ public class Column implements Node {
         this.dataType = dataType;
         this.dataLenNum = dataLenNum;
     }
+
+    public void setRefTb(String refTb) {
+        this.refTb = refTb;
+        this.refEntity = IHLProcessor.nameGenerator.generateEntityName(refTb);
+    }
+
 
     public void setColNm(String colNm) {
         this.colNm = colNm;
@@ -61,15 +68,17 @@ public class Column implements Node {
         this.dataLenNum = dataLenNum;
     }
 
-    public Column(String colNm, String dataType, Double dataLenNum, Constraint constraint) {
-        this.colNm = camelFromSnake(colNm.toLowerCase());
-        this.dataType = dataType;
-        this.dataLenNum = dataLenNum;
-        this.constraint = constraint;
+
+    public String getRefTb() {
+        return refTb;
     }
 
     public String getColNm() {
         return colNm;
+    }
+
+    public String getRefEntity() {
+        return refEntity;
     }
 
     public String getDataType() {

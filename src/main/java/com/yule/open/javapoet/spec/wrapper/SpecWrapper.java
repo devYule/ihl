@@ -1,10 +1,10 @@
-package com.yule.open.utils.javapoet.spec.wrapper;
+package com.yule.open.javapoet.spec.wrapper;
 
-public abstract class Spec {
+public abstract class SpecWrapper {
 
     private int pkCnt;
 
-    public Spec() {
+    public SpecWrapper() {
         this.pkCnt = 0;
     }
 

@@ -1,22 +1,26 @@
-package com.yule.open.utils.javapoet.spec.wrapper.impl;
+package com.yule.open.javapoet.spec.wrapper.impl;
 
 import com.squareup.javapoet.FieldSpec;
-import com.yule.open.utils.javapoet.spec.wrapper.Spec;
+import com.yule.open.javapoet.spec.wrapper.SpecWrapper;
 
-public class FieldSpecWrapper extends Spec {
+import static com.yule.open.utils.StringUtils.camelFromSnake;
+
+public class FieldSpecWrapper extends SpecWrapper {
 
     private final int parent;
     private final FieldSpec.Builder builder;
-    private int pkCnt;
     private boolean isFK;
-    private final String fieldNm;
+    private String fieldNm;
+    private final String refTb;
 
-
-
-    public FieldSpecWrapper(int parent, FieldSpec.Builder builder, String fieldNm) {
+    public FieldSpecWrapper(int parent, FieldSpec.Builder builder, String fieldNm, String refTb) {
         this.parent = parent;
         this.builder = builder;
-        this.pkCnt = 0;
+        this.fieldNm = fieldNm;
+        this.refTb = refTb;
+    }
+
+    public void setFieldNm(String fieldNm) {
         this.fieldNm = fieldNm;
     }
 
@@ -32,6 +36,10 @@ public class FieldSpecWrapper extends Spec {
         isFK = FK;
     }
 
+    public String getRefTb() {
+        return refTb;
+    }
+
     public int getParent() {
         return parent;
     }
@@ -39,7 +47,6 @@ public class FieldSpecWrapper extends Spec {
     public FieldSpec.Builder getBuilder() {
         return builder;
     }
-
 
 
 }

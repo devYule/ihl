@@ -1,12 +1,12 @@
-package com.yule.open.utils.javapoet.spec.wrapper.impl;
+package com.yule.open.javapoet.spec.wrapper.impl;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.yule.open.database.data.Constraint;
 import com.yule.open.database.data.enums.ConstraintsType;
 import com.yule.open.properties.Environment;
-import com.yule.open.utils.javapoet.spec.wrapper.Spec;
-import com.yule.open.utils.javapoet.spec.wrapper.wrapper.AnnotationSpecBuilderWrapper;
+import com.yule.open.javapoet.spec.wrapper.SpecWrapper;
+import com.yule.open.javapoet.spec.wrapper.wrapper.AnnotationSpecBuilderWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 import static com.yule.open.properties.enums.EnvironmentProperties.AnnotationProcessor.HIBERNATE_DEPENDENCY;
 import static com.yule.open.properties.enums.EnvironmentProperties.AnnotationProcessor.JPA_DEPENDENCY;
 
-public class AnnotationSpecWrapper extends Spec {
+public class ConstraintsAnnotationSpecWrapper extends SpecWrapper {
 
     private final int parent;
     private final AnnotationSpec.Builder[] builder;
@@ -23,7 +23,7 @@ public class AnnotationSpecWrapper extends Spec {
     private final boolean[] propIsVisited;
 
 
-    public AnnotationSpecWrapper(int parent, boolean[] propIsVisited) {
+    public ConstraintsAnnotationSpecWrapper(int parent, boolean[] propIsVisited) {
         int annoCnt = AnnotationKindIndex.values().length;
         this.parent = parent;
         this.builder = new AnnotationSpec.Builder[annoCnt];
@@ -32,7 +32,7 @@ public class AnnotationSpecWrapper extends Spec {
         this.propIsVisited = propIsVisited;
     }
 
-    public AnnotationSpecWrapper decideColumnAnnotation() {
+    public ConstraintsAnnotationSpecWrapper decideColumnAnnotation() {
         if (this.builder[AnnotationKindIndex.MANY_TO_ONE.getIdx()] == null) {
             this.builder[AnnotationKindIndex.JOIN_COLUMN.getIdx()] = null;
         } else {
