@@ -1,6 +1,7 @@
 package com.yule.open.core;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.TypeSpec;
 import com.yule.open.annotations.EnableEntityGenerator;
 import com.yule.open.database.ConnectionFactory;
 import com.yule.open.database.DatabaseAdapter;
@@ -77,22 +78,27 @@ public class IHLProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        // createLogger
         Logger.setMessager(processingEnv.getMessager());
 
+        // getAnnotationElements
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(EnableEntityGenerator.class);
 
-        if (elements == null || elements.isEmpty()) return true;
-
-        EntityAdapter entityAdapter = new DefaultEntityAdapter(processingEnv.getElementUtils());
-
+        // checkAnnotationElements
         info(FIND_ANNOTATION.getProc());
+        if (elements == null || elements.isEmpty()) return true;
         if (isOver(1, elements.size())) error(ANNOTATION_DUPLICATED.getMessage());
         info(FIND_ANNOTATION.getSuccess());
 
+        // createDefaultEntityAdapter
+        EntityAdapter entityAdapter = new DefaultEntityAdapter(processingEnv.getElementUtils());
+
+        // checkJPADependency
         info(FIND_JPA_DEPENDENCY.getProc());
         if (isEquals(-1, entityAdapter.validateJPADependency())) error(JPA_NOT_FOUND.getMessage());
         info(FIND_JPA_DEPENDENCY.getSuccess());
 
+        // validateRequiredEnvironments
         info(VALIDATE_REQUIRED_ENVIRONMENTS.getProc());
         String url = processingEnv.getOptions().get(Required.DB_URL.getEnv());
         String name = processingEnv.getOptions().get(Required.DB_USERNAME.getEnv());
@@ -109,6 +115,7 @@ public class IHLProcessor extends AbstractProcessor {
         String allArgs = processingEnv.getOptions().get("need.allArgs");
         String builder = processingEnv.getOptions().get("need.builder");
 
+        // setRequiredEnvironments
         Environment.put(Required.DB_URL, url);
         Environment.put(Required.DB_USERNAME, name);
         Environment.put(Required.DB_PASSWORD, pw);
@@ -133,14 +140,19 @@ public class IHLProcessor extends AbstractProcessor {
         Environment.put(AnnotationProcessor.HIBERNATE_DEPENDENCY, "org.hibernate.annotations");
         Environment.put(AnnotationProcessor.JAVA_IO, "java.io");
 
-
-        nameGenerator = new NameGenerator(entityNamePrefix, entityNameSuffix);
         info(VALIDATE_REQUIRED_ENVIRONMENTS.getSuccess());
+        // createNameGenerator
+        nameGenerator = new NameGenerator(Environment.get(Required.ENTITY_NAME_PREFIX),
+                Environment.get(Required.ENTITY_NAME_SUFFIX));
 
-        info("Connect to database...");
+
         try {
+
+            // createDatabaseAdapterWithJoinConnection
+            info("Connect to database...");
             DatabaseAdapter databaseAdapter = new NodeDatabaseAdapter();
 
+            // analyseConnectionInfo
             info("Check your database name...");
             DatabaseKind databaseKind = getDatabaseKind();
             String dbname = null;
@@ -154,12 +166,14 @@ public class IHLProcessor extends AbstractProcessor {
             if (isNull(dbname)) error(SCHEMA_OR_DATABASE_NAME_IS_NOT_PROVIDED.getMessage());
             info("Database is found...");
 
+            // findAllTables
             List<String> tables = databaseAdapter.findTables(dbname);
             info("Connection Success...");
             collectionBatchInfo("elements: ", tables);
 
 
             info("Find exists Entities...");
+            // findAlreadyEntities
             Set<? extends Element> allElements = roundEnv.getRootElements();
             int cnt = 0;
             for (Element el : allElements) {
@@ -167,6 +181,7 @@ public class IHLProcessor extends AbstractProcessor {
             }
             info(cnt + " classes has @Entity...");
 
+            // entityTableFilter
             info("Comparing Table and Entity class...");
             EntityTableMediator mediator = new DefaultEntityTableMediator(entityAdapter, databaseAdapter);
             List<String> toEntityTables = mediator.compareToTables();
@@ -175,22 +190,26 @@ public class IHLProcessor extends AbstractProcessor {
 
             if (toEntityTables.isEmpty()) {
                 info("You already have all the entities...");
-            } else {
-
-                info("Analyse your tables with column and constraints...");
-//                Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
-                AnalyseResult entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
-                info("All tables, columns and constraints READY...");
-
-                info("Generate Source...");
-                new JavapoetNodeBatchSourceGenerator<>().generate(entityTables);
+                return true;
             }
+
+            // analyseTable
+            info("Analyse your tables with column and constraints...");
+//                Table[] entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
+            AnalyseResult entityTables = databaseAdapter.analyseAllTablesAndBatchSources(dbname, toEntityTables);
+            info("All tables, columns and constraints READY...");
+
+            // generateSource
+            info("Generate Source...");
+            List<TypeSpec> generated = new JavapoetNodeBatchSourceGenerator<>().generate(entityTables);
+            info(generated.size() + " Entity files generated in " + Environment.get(Required.ENTITY_PATH) + "...");
             info("Done...");
             info("Success to make Entity Sources!!!");
 
             return true;
 
         } finally {
+            // closeConnection
             ConnectionFactory.close();
         }
     }

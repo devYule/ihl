@@ -5,7 +5,7 @@ import com.yule.open.properties.enums.EnvironmentProperties;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Environment {
+public abstract class Environment {
     private static final Map<EnvironmentProperties, String> properties;
 
     static {

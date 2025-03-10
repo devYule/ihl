@@ -3,8 +3,6 @@ package com.yule.open.javapoet.spec.wrapper.impl;
 import com.squareup.javapoet.FieldSpec;
 import com.yule.open.javapoet.spec.wrapper.SpecWrapper;
 
-import static com.yule.open.utils.StringUtils.camelFromSnake;
-
 public class FieldSpecWrapper extends SpecWrapper {
 
     private final int parent;
