@@ -6,10 +6,7 @@ import com.yule.open.core.chain.Chain;
 import com.yule.open.core.chain.impl.*;
 import com.yule.open.core.context.ProcessContext;
 import com.yule.open.core.context.impl.DefaultProcessContext;
-
-import com.yule.open.properties.enums.EnvironmentProperties;
 import com.yule.open.utils.NameGenerator;
-
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
