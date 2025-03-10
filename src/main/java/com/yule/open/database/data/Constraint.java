@@ -2,7 +2,9 @@ package com.yule.open.database.data;
 
 import com.yule.open.core.IHLProcessor;
 import com.yule.open.database.data.enums.ConstraintsType;
+import com.yule.open.utils.NameGenerator;
 
+import static com.yule.open.core.IHLProcessor.context;
 import static com.yule.open.utils.StringUtils.camelFromSnake;
 
 public class Constraint implements Node {
@@ -29,7 +31,7 @@ public class Constraint implements Node {
         this.refCol = refCol;
         this.dataLenVarchar = dataLenVarchar;
         this.refEntity = refTb != null && refCol != null ?
-                IHLProcessor.nameGenerator.generateEntityName(refTb) :
+                context.getContext(NameGenerator.class).generateEntityName(refTb) :
                 null;
         this.checkString = checkString;
     }
@@ -74,7 +76,7 @@ public class Constraint implements Node {
         this.refCol = refCol;
         this.dataLenVarchar = dataLenVarchar;
         this.refEntity = refTb != null && refCol != null ?
-                IHLProcessor.nameGenerator.generateEntityName(refTb) :
+                context.getContext(NameGenerator.class).generateEntityName(refTb) :
                 null;
         this.checkString = checkString;
         return this;

@@ -10,12 +10,14 @@ import com.yule.open.javapoet.properties.AnnotationProperties;
 import com.yule.open.properties.Environment;
 import com.yule.open.utils.LombokAnnotationGenerator;
 import com.yule.open.javapoet.spec.wrapper.impl.TypeSpecWrapper;
+import com.yule.open.utils.NameGenerator;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.yule.open.core.IHLProcessor.context;
 import static com.yule.open.database.ConnectionFactory.*;
 import static com.yule.open.database.enums.DatabaseKind.MYSQL;
 import static com.yule.open.database.enums.DatabaseKind.ORACLE;
@@ -36,7 +38,7 @@ public class TypeSpecGenerator {
     private TypeSpec.Builder generateSpec(Table table) {
 
         /* generate process */
-        return TypeSpec.classBuilder(IHLProcessor.nameGenerator.generateEntityName(table.getTbNm()))
+        return TypeSpec.classBuilder(context.getContext(NameGenerator.class).generateEntityName(table.getTbNm()))
                 .addModifiers(Modifier.PUBLIC);
 
     }

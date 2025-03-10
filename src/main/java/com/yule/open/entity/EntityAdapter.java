@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface EntityAdapter {
 
-    int validateJPADependency();
+    int resolveEntityPath();
 
     boolean hasEntityAnnotation(Element el);
 

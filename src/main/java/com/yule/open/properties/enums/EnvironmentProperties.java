@@ -1,5 +1,9 @@
 package com.yule.open.properties.enums;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public interface EnvironmentProperties {
 
     enum Required implements EnvironmentProperties {
@@ -11,6 +15,7 @@ public interface EnvironmentProperties {
         ENTITY_NAME_SUFFIX("entity.name.suffix"),
         ORACLE_SCHEMA("db.schema"),
         MY_SQL_AND_MARIA_DB("db.database-name"),
+        DB_NAME("db.name"),
         PROJECT_ROOT("project.root");
 
         private final String env;
@@ -21,6 +26,10 @@ public interface EnvironmentProperties {
 
         public String getEnv() {
             return env;
+        }
+
+        public static Set<String> toSet() {
+            return Arrays.stream(Required.values()).map(p -> p.env).collect(Collectors.toSet());
         }
     }
 
@@ -36,13 +45,17 @@ public interface EnvironmentProperties {
         Optional(String env) {
             this.env = env;
         }
+
+        public static Set<String> toSet() {
+            return Arrays.stream(Required.values()).map(p -> p.env).collect(Collectors.toSet());
+        }
     }
 
 
     enum AnnotationProcessor implements EnvironmentProperties {
         JPA_DEPENDENCY("processor.jpaDependency"),
         HIBERNATE_DEPENDENCY("processor.hibernate"),
-        JAVA_IO("processor.serializable")
+        JAVA_IO("processor.serializable"),
         ;
 
         private final String env;
@@ -50,6 +63,11 @@ public interface EnvironmentProperties {
         AnnotationProcessor(String env) {
             this.env = env;
         }
+
+        public static Set<String> toSet() {
+            return Arrays.stream(Required.values()).map(p -> p.env).collect(Collectors.toSet());
+        }
     }
 
 }
+

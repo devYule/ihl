@@ -11,10 +11,12 @@ import com.yule.open.javapoet.properties.AnnotationName;
 import com.yule.open.javapoet.spec.JavaPoetSpecGenerateCommander;
 import com.yule.open.javapoet.spec.wrapper.impl.FieldSpecWrapper;
 import com.yule.open.javapoet.spec.wrapper.impl.TypeSpecWrapper;
+import com.yule.open.utils.NameGenerator;
 
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
 
+import static com.yule.open.core.IHLProcessor.context;
 import static com.yule.open.utils.StringUtils.camelFromSnake;
 
 public class FieldSpecGenerator {
@@ -89,7 +91,7 @@ public class FieldSpecGenerator {
                     // add embeddedId at field
                     // embeddable 을 '사용할' 클래스의 embeddable 을 사용하는 필드에 EmbeddedId 어노테이션 추가.
                     FieldSpec embeddedId =
-                            FieldSpec.builder(TypeConverter.convert(IHLProcessor.nameGenerator.generateEntityName(parentTypeSpec.getAdditionalTypeName(embeddable))),
+                            FieldSpec.builder(TypeConverter.convert(context.getContext(NameGenerator.class).generateEntityName(parentTypeSpec.getAdditionalTypeName(embeddable))),
                                             "embeddedId", Modifier.PRIVATE)
                                     .addAnnotation(ClassName.get(Environment.get(EnvironmentProperties.AnnotationProcessor.JPA_DEPENDENCY),
                                             "EmbeddedId"))

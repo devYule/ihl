@@ -7,11 +7,12 @@ import com.yule.open.properties.Environment;
 import com.yule.open.properties.enums.EnvironmentProperties;
 import com.yule.open.javapoet.spec.JavaPoetSpecGenerateCommander;
 import com.yule.open.javapoet.spec.wrapper.SpecWrapper;
+import com.yule.open.utils.NameGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.yule.open.core.IHLProcessor.nameGenerator;
+import static com.yule.open.core.IHLProcessor.context;
 
 public class TypeSpecWrapper extends SpecWrapper {
     private final TypeSpec.Builder builder;
@@ -65,7 +66,7 @@ public class TypeSpecWrapper extends SpecWrapper {
                 this.additionalTypeNames[kind.getIdx()] = kind.getAdditionalTypePrefix() + tbNm + kind.getAdditionalTypeSuffix();
             }
 
-            this.additionalBuilder[kind.getIdx()] = TypeSpec.classBuilder(nameGenerator.generateEntityName(additionalTypeNames[kind.getIdx()]));
+            this.additionalBuilder[kind.getIdx()] = TypeSpec.classBuilder(context.getContext(NameGenerator.class).generateEntityName(additionalTypeNames[kind.getIdx()]));
         }
 
         return kind.getIdx();

@@ -24,7 +24,6 @@ public class DefaultEntityTableMediator extends EntityTableMediator {
         List<String> allTables = databaseAdapter.getAllTables();
         List<String> alreadyEntityNamesCopy = new ArrayList<>(entityAdapter.getAlreadyEntityNames());
 
-
         int[] forRemoveArr = new int[allTables.size()];
         Arrays.fill(forRemoveArr, -1);
 

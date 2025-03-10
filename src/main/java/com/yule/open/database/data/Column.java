@@ -1,10 +1,12 @@
 package com.yule.open.database.data;
 
 import com.yule.open.core.IHLProcessor;
+import com.yule.open.utils.NameGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.yule.open.core.IHLProcessor.context;
 import static com.yule.open.utils.StringUtils.camelFromSnake;
 
 public class Column implements Node {
@@ -44,7 +46,7 @@ public class Column implements Node {
 
     public void setRefTb(String refTb) {
         this.refTb = refTb;
-        this.refEntity = IHLProcessor.nameGenerator.generateEntityName(refTb);
+        this.refEntity = context.getContext(NameGenerator.class).generateEntityName(refTb);
     }
 
 

@@ -26,7 +26,7 @@ public class DefaultEntityAdapter implements EntityAdapter {
     }
 
 
-    public int validateJPADependency() {
+    public int resolveEntityPath() {
         for (int i = 0; i < expectEntityPath.length; i++) {
             if (elementUtils.getTypeElement(expectEntityPath[i]) != null) {
                 validEntityPathIdx = i;
@@ -37,7 +37,6 @@ public class DefaultEntityAdapter implements EntityAdapter {
     }
 
     public boolean hasEntityAnnotation(Element el) {
-
         for (AnnotationMirror mirror : el.getAnnotationMirrors()) {
             if (mirror.getAnnotationType().toString().equals(expectEntityPath[validEntityPathIdx])) {
                 boolean namedByAnnotationFlag = false;

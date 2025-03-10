@@ -2,13 +2,11 @@ package com.yule.open.core.context;
 
 public interface ProcessContext {
 
-    <T> T getContext(Class<?> key);
+    <T> T getContext(Class<T> key);
 
-    Class<?> addContext(Object context);
+    <T> Class<T> addContext(Class<T> key, Object context);
 
-    Class<?> addContext(Class<?> key, Object context);
-
-    Object overwriteContext(Object context);
+    <T> Object overwriteContext(Class<T> key, Object context);
 
     boolean has(Class<?> key);
 }

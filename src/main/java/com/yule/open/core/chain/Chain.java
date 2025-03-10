@@ -1,9 +1,28 @@
 package com.yule.open.core.chain;
 
-import com.yule.open.core.context.ProcessContext;
 
-public interface Chain {
-    void execute(ProcessContext context);
+public abstract class Chain {
 
-    void next(ProcessContext context);
+    private Chain next;
+    private final int order;
+
+    public Chain(int order) {
+        this.order = order;
+    }
+
+    public static Chain build(Chain first, Chain... other) {
+        Chain prev = first;
+        for (Chain chain : other) {
+            prev.next = chain;
+            prev = chain;
+        }
+        return first;
+    }
+
+    public abstract boolean execute();
+
+    public boolean doNext() {
+        if (next == null) return true;
+        return next.execute();
+    }
 }

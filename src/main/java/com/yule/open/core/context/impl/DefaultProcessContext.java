@@ -12,24 +12,22 @@ public class DefaultProcessContext implements ProcessContext {
         context = new HashMap<>();
     }
 
-    public <T> T getContext(Class<?> key) {
+    public <T> T getContext(Class<T> key) {
         Object val = context.get(key);
-        return val == null ? null : (T) val;
+        return key.isInstance(val) ? key.cast(val) : null;
     }
 
-    public Class<?> addContext(Object context) {
-        return addContext(context.getClass(), context);
-    }
-
-    public Class<?> addContext(Class<?> key, Object context) {
+    public <T> Class<T> addContext(Class<T> key, Object context) {
         this.context.put(key, context);
         return key;
     }
 
-    public Object overwriteContext(Object context) {
-        Object prev = this.context.get(context.getClass());
-        addContext(context);
-        return prev;
+    public <T> T overwriteContext(Class<T> key, Object context) {
+        Object prev = this.context.get(key);
+        T t = null;
+        if (key.isInstance(prev)) t = key.cast(prev);
+        addContext(key, context);
+        return t;
     }
 
     public boolean has(Class<?> key) {
