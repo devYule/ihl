@@ -38,7 +38,7 @@ public class EntityTableFilter extends Chain {
 
         if (toEntityTables.isEmpty()) {
             info("You already have all the entities...");
-            return false;
+            return true;
         }
 
         return doNext();

@@ -5,7 +5,6 @@ import com.yule.open.entity.EntityAdapter;
 import com.yule.open.mediator.EntityTableMediator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DefaultEntityTableMediator extends EntityTableMediator {
@@ -25,24 +24,22 @@ public class DefaultEntityTableMediator extends EntityTableMediator {
         List<String> alreadyEntityNamesCopy = new ArrayList<>(entityAdapter.getAlreadyEntityNames());
 
         int[] forRemoveArr = new int[allTables.size()];
-        Arrays.fill(forRemoveArr, -1);
-
-        int toEntityTableSize = 0;
 
         for (int i = 0; i < allTables.size(); i++) {
+            String cur = allTables.get(i).replaceAll("_", "");
             for (int j = 0; j < alreadyEntityNamesCopy.size(); j++) {
                 String e = alreadyEntityNamesCopy.get(j);
                 if (e == null) continue;
-                if (allTables.get(i).toLowerCase().replaceAll("_", "").equals(e)) {
+                if (cur.equalsIgnoreCase(e)) {
                     alreadyEntityNamesCopy.set(j, null);
-                    forRemoveArr[toEntityTableSize++] = i;
+                    forRemoveArr[i] = -1;
                     break;
                 }
             }
         }
         toEntityTables = new ArrayList<>();
         for (int i = 0; i < allTables.size(); i++) {
-            if (i == forRemoveArr[i]) continue;
+            if (forRemoveArr[i] == -1) continue;
             toEntityTables.add(allTables.get(i));
         }
 

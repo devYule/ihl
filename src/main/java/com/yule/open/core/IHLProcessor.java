@@ -60,8 +60,8 @@ public class IHLProcessor extends AbstractProcessor {
         context.addContext(RoundEnvironment.class, roundEnv);
 
         return Chain.build(
-                new Initializr(1),
-                new ElementValidator(2, EnableEntityGenerator.class),
+                new Initializr(1, EnableEntityGenerator.class),
+                new ElementValidator(2),
                 new EnvironmentResolver(3),
                 new NameGeneratorGenerator(4),
                 new ConnectionAnalyser(5),

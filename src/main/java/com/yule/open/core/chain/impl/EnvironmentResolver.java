@@ -14,8 +14,7 @@ import static com.yule.open.properties.enums.ProcessingMessageProperties.FIND_JP
 import static com.yule.open.properties.enums.ProcessingMessageProperties.VALIDATE_REQUIRED_ENVIRONMENTS;
 import static com.yule.open.utils.Logger.error;
 import static com.yule.open.utils.Logger.info;
-import static com.yule.open.utils.Validator.anyNull;
-import static com.yule.open.utils.Validator.isEquals;
+import static com.yule.open.utils.Validator.*;
 
 public class EnvironmentResolver extends Chain {
     public EnvironmentResolver(int order) {
@@ -55,10 +54,11 @@ public class EnvironmentResolver extends Chain {
         Environment.put(EnvironmentProperties.Required.ENTITY_PATH, path);
         Environment.put(EnvironmentProperties.Required.PROJECT_ROOT, projectRoot);
 
-        // lazy
-        Environment.put(EnvironmentProperties.Required.ORACLE_SCHEMA, null);
-        // lazy
-        Environment.put(EnvironmentProperties.Required.MY_SQL_AND_MARIA_DB, null);
+        String schema = processingEnv.getOptions().get(EnvironmentProperties.Required.ORACLE_SCHEMA.getEnv());
+        String dbname = processingEnv.getOptions().get(EnvironmentProperties.Required.MY_SQL_AND_MARIA_DB.getEnv());
+        if (!anyNotNull(schema, dbname)) error(REQUIRED_ENVIRONMENT_NOT_PROVIDED.getMessage());
+        Environment.put(EnvironmentProperties.Required.ORACLE_SCHEMA, schema);
+        Environment.put(EnvironmentProperties.Required.MY_SQL_AND_MARIA_DB, dbname);
 
         Environment.put(EnvironmentProperties.Required.ENTITY_NAME_PREFIX, entityNamePrefix);
         Environment.put(EnvironmentProperties.Required.ENTITY_NAME_SUFFIX, entityNameSuffix);

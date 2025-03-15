@@ -4,7 +4,7 @@ package com.yule.open.core.chain;
 public abstract class Chain {
 
     private Chain next;
-    private final int order;
+    private final int order; // not in actual use
 
     public Chain(int order) {
         this.order = order;

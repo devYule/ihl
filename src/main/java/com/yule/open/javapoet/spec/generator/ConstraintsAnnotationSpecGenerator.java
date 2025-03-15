@@ -97,7 +97,7 @@ public class ConstraintsAnnotationSpecGenerator {
         if (anno == CHECK) {
             AnnotationProperties.Check constraintsProps = AnnotationProperties.Check.CONSTRAINTS;
             builder.addMember(constraintsProps.getName(), constraintsProps.getFormat(),
-                    constraint.getCheckString().replaceAll("\"", "")).build();
+                    constraint.getCheckString().replaceAll("[\"_\\-]", "")).build();
         }
     }
 

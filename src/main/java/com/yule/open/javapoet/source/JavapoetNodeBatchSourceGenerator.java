@@ -24,12 +24,9 @@ import static com.yule.open.utils.Logger.error;
 
 public class JavapoetNodeBatchSourceGenerator<T extends AnalyseResult, R extends TypeSpec> implements SourceGenerator<T, R> {
 
-
     private List<List<Integer>> graph;
     private List<Node> node;
-
     private JavaPoetSpecGenerateCommander specGenerator;
-
 
     @Override
     public List<R> generate(T info) {

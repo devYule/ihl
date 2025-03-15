@@ -28,16 +28,18 @@ public abstract class TypeConverter {
 
 
     public static Class convert(String type, Double numDataLen) {
-
+        type = type.replaceAll("\\(\\d+\\)", "");
         int idx = type.toLowerCase().charAt(0) - 'a';
         ArrayList<PrimitiveTypeDatabaseToJava> scope = orderedTypes[idx];
         for (int i = 0; i < scope.size(); i++) {
             PrimitiveTypeDatabaseToJava item = scope.get(i);
             String t = item.name().toLowerCase();
+
             if (t.replaceAll("_", "").contains(type.replaceAll("_", "").toLowerCase()) &&
                 item.getMax() <= numDataLen) {
                 return scope.get(i).getType();
             }
+
         }
         error(INVALID_TYPE.getMessage());
         throw new RuntimeException();

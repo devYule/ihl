@@ -2,9 +2,7 @@ package com.yule.open.core.chain.impl;
 
 import com.yule.open.core.chain.Chain;
 
-import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.element.Element;
-import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import static com.yule.open.core.IHLProcessor.context;
@@ -16,19 +14,15 @@ import static com.yule.open.utils.Validator.isOver;
 
 public class ElementValidator extends Chain {
 
-    private final Class<? extends Annotation> annotationType;
-
-    public ElementValidator(int order, Class<? extends Annotation> annotationType) {
+    public ElementValidator(int order) {
         super(order);
-        this.annotationType = annotationType;
     }
 
     @Override
     public boolean execute() {
 
-        Set<? extends Element> elements = context.getContext(RoundEnvironment.class).getElementsAnnotatedWith(annotationType);
-        context.addContext(Element.class, elements);
-
+        @SuppressWarnings("unchecked")
+        Set<? extends Element> elements = (Set<? extends Element>) context.getContext(Set.class);
         if (!validate(elements)) return true;
 
         return doNext();

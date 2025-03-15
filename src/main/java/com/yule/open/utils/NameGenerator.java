@@ -7,13 +7,8 @@ public class NameGenerator {
     private final String suffix;
 
     public NameGenerator(String prefix, String suffix) {
-
-//        this.prefix = prefix == null || prefix.isEmpty() ? "" : camelFromSnake(prefix, true);
-//        this.suffix = suffix == null || suffix.isEmpty() ? "" : camelFromSnake(suffix, true);
-
         this.prefix = prefix == null || prefix.isEmpty() ? "" : prefix;
         this.suffix = suffix == null || suffix.isEmpty() ? "" : suffix;
-
     }
 
 
@@ -23,6 +18,17 @@ public class NameGenerator {
 
     public String generateEntityName(String name) {
         return camelFromSnake(generateDatabaseName(name), true);
+    }
+
+    public String extractOriginalName(String name) {
+        String r = name;
+        if (r.startsWith(prefix)) r = r.replace(prefix, "");
+        int suffixIdx = r.length() - suffix.length() + 1;
+        if (suffixIdx < 0) return r;
+        if (r.substring(suffixIdx).equalsIgnoreCase(suffix)) {
+            r = r.substring(0, suffixIdx);
+        }
+        return r;
     }
 
 

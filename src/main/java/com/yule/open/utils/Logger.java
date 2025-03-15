@@ -12,10 +12,6 @@ public class Logger {
         msg = m;
     }
 
-    private static void print(Diagnostic.Kind k, String m) {
-        msg.printMessage(k, m);
-    }
-
     public static void error(String m) {
         error(m, new RuntimeException(m));
     }
@@ -44,5 +40,13 @@ public class Logger {
         }
         sb.append("]");
         info(prefix + sb);
+    }
+
+    /* --- --- --- --- ---                   ---- ---- ---- ---- */
+    /* ------------------- extracted methods ------------------- */
+    /* ---- ---- ---- ----                   --- --- --- --- --- */
+
+    private static void print(Diagnostic.Kind k, String m) {
+        msg.printMessage(k, m);
     }
 }

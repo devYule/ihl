@@ -55,6 +55,11 @@ public abstract class ConnectionFactory {
     }
 
     public static DatabaseKind getDatabaseKind() {
+        try {
+            getConnection();
+        } catch (SQLException e) {
+            error("Can not connect your database!");
+        }
         return databaseKind;
     }
 

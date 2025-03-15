@@ -1,7 +1,5 @@
 package com.yule.open.database.impl.graph;
 
-import com.yule.open.database.ConnectionFactory;
-import com.yule.open.database.DatabaseAdapter;
 import com.yule.open.database.data.*;
 import com.yule.open.database.data.enums.ConstraintsType;
 import com.yule.open.database.enums.QueryKind;
@@ -21,8 +19,10 @@ public class OracleNodeDatabaseAdapter extends NodeDatabaseAdapter {
     public List<String> findTables(String dbname) {
         String query = getQueryToken(QueryKind.GET_TABLE);
         try (PreparedStatement ps = getConnection().prepareStatement(query)) {
-
             ps.setString(1, dbname);
+            ps.setString(2, dbname);
+            ps.setString(3, dbname);
+            ps.setString(4, dbname);
             try (ResultSet resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
                     allTables.add(resultSet.getString(1));
